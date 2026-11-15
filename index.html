@@ -1,0 +1,355 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Mochi: Your todo list, with a pal who cares.</title><meta name="description" content="Mochi is a todo app with a little pal who feels your day. Bored when it's empty. Overwhelmed when you fall behind. Calm when you're caught up."><link rel="canonical" href="https://mochitodo.com/"><meta property="og:title" content="Mochi"><meta property="og:description" content="Mochi is a todo app with a little pal who feels your day. Bored when it's empty. Overwhelmed when you fall behind. Calm when you're caught up."><meta property="og:type" content="website"><meta property="og:image" content="https://mochitodo.com/images/icon.jpg"><meta name="theme-color" content="#fff6e0"><link rel="icon" type="image/png" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="stylesheet" href="/_astro/Base.Cwd_X5fp.css"><link rel="stylesheet" href="/_astro/index.skgbAGV7.css"></head><body><header class="site-header" data-astro-cid-nen7h5rs><div class="wrap bar" data-astro-cid-nen7h5rs><a class="brand" href="/" aria-label="Mochi home" data-astro-cid-nen7h5rs><img src="/images/logotype.png" alt="Mochi" width="118" height="41" data-astro-cid-nen7h5rs></a><nav aria-label="Main" data-astro-cid-nen7h5rs><a href="/#list" data-astro-cid-nen7h5rs>The list</a><a class="far" href="/support/" data-astro-cid-nen7h5rs>Support</a><a class="tally" id="tally" href="#list" hidden aria-label="Hearts earned on this page" data-astro-cid-nen7h5rs><img src="/images/app/heart-full.png" alt="" width="22" height="20" data-astro-cid-nen7h5rs><span id="tally-count" data-astro-cid-nen7h5rs>0/7</span></a></nav></div></header><main><section class="hero"><div class="wrap grid"><div class="hero-text"><img class="logo" src="/images/logotype.png" alt="Mochi" width="287" height="100"><h1>Your todo list, with a pal who cares.</h1><p class="lead">Mochi is a todo app with a little pal who feels your day.<span class="lead-more"> Bored when it's empty. Overwhelmed when you fall behind. Calm when you're caught up.</span></p><div class="cta"><a class="btn " href="/#get" data-request-access>Request access</a><a class="textlink" href="#list">See what's on the list</a></div></div><div class="hero-pal"><div class="hero-art" data-astro-cid-elm4t4gh><div class="phone" data-astro-cid-elm4t4gh><img class="world" id="pal-world" alt="" width="830" height="1800" decoding="async" data-astro-cid-elm4t4gh><img class="pal" id="pal-still" alt="" decoding="async" data-astro-cid-elm4t4gh><video class="pal" id="pal-video" muted loop playsinline preload="auto" aria-hidden="true" data-astro-cid-elm4t4gh></video><noscript><img class="world" src="/pals/bg/classic.jpg" alt="" width="830" height="1800" data-astro-cid-elm4t4gh><img class="pal" src="/pals/classic/guy-bored.webp" alt="" style="--ar:0.8828;--k:1" data-astro-cid-elm4t4gh></noscript></div><img class="icon" src="/images/icon.jpg" alt="" width="512" height="512" data-astro-cid-elm4t4gh><p class="pal-mood" id="pal-mood" aria-live="off" data-astro-cid-elm4t4gh></p></div><script>(function(){const clips = [{"id":"classic","base":"/pals/classic/guy-bored","bg":"/pals/bg/classic.jpg","skin":"Classic","classic":true,"mood":"bored","ar":0.8828,"k":1},{"id":"classic","base":"/pals/classic/guy-overwhelmed","bg":"/pals/bg/classic.jpg","skin":"Classic","classic":true,"mood":"overwhelmed","ar":0.5556,"k":1},{"id":"classic","base":"/pals/classic/girl-overwhelmed","bg":"/pals/bg/classic.jpg","skin":"Classic","classic":true,"mood":"overwhelmed","ar":0.5556,"k":1},{"id":"cyberpunk","base":"/pals/cyberpunk/guy-bored","bg":"/pals/bg/cyberpunk.jpg","skin":"Cyberpunk","classic":false,"mood":"bored","ar":1,"k":1},{"id":"cyberpunk","base":"/pals/cyberpunk/guy-overwhelmed","bg":"/pals/bg/cyberpunk.jpg","skin":"Cyberpunk","classic":false,"mood":"overwhelmed","ar":1,"k":1},{"id":"cyberpunk","base":"/pals/cyberpunk/girl-bored","bg":"/pals/bg/cyberpunk.jpg","skin":"Cyberpunk","classic":false,"mood":"bored","ar":1,"k":1},{"id":"cyberpunk","base":"/pals/cyberpunk/girl-overwhelmed","bg":"/pals/bg/cyberpunk.jpg","skin":"Cyberpunk","classic":false,"mood":"overwhelmed","ar":1,"k":1},{"id":"dios","base":"/pals/dios/guy-bored","bg":"/pals/bg/dios.jpg","skin":"Dios","classic":false,"mood":"bored","ar":1,"k":1},{"id":"dios","base":"/pals/dios/guy-overwhelmed","bg":"/pals/bg/dios.jpg","skin":"Dios","classic":false,"mood":"overwhelmed","ar":1,"k":1},{"id":"dios","base":"/pals/dios/girl-bored","bg":"/pals/bg/dios.jpg","skin":"Dios","classic":false,"mood":"bored","ar":1,"k":1},{"id":"dios","base":"/pals/dios/girl-overwhelmed","bg":"/pals/bg/dios.jpg","skin":"Dios","classic":false,"mood":"overwhelmed","ar":1,"k":1},{"id":"japan","base":"/pals/japan/guy-bored","bg":"/pals/bg/japan.jpg","skin":"Japan","classic":false,"mood":"bored","ar":1,"k":1},{"id":"japan","base":"/pals/japan/guy-overwhelmed","bg":"/pals/bg/japan.jpg","skin":"Japan","classic":false,"mood":"overwhelmed","ar":1,"k":1},{"id":"japan","base":"/pals/japan/girl-bored","bg":"/pals/bg/japan.jpg","skin":"Japan","classic":false,"mood":"bored","ar":1,"k":1.5},{"id":"japan","base":"/pals/japan/girl-overwhelmed","bg":"/pals/bg/japan.jpg","skin":"Japan","classic":false,"mood":"overwhelmed","ar":1,"k":1},{"id":"wizard","base":"/pals/wizard/guy-bored","bg":"/pals/bg/wizard.jpg","skin":"Wizard","classic":false,"mood":"bored","ar":1,"k":1},{"id":"wizard","base":"/pals/wizard/guy-overwhelmed","bg":"/pals/bg/wizard.jpg","skin":"Wizard","classic":false,"mood":"overwhelmed","ar":1,"k":1},{"id":"wizard","base":"/pals/wizard/girl-bored","bg":"/pals/bg/wizard.jpg","skin":"Wizard","classic":false,"mood":"bored","ar":1,"k":1},{"id":"wizard","base":"/pals/wizard/girl-overwhelmed","bg":"/pals/bg/wizard.jpg","skin":"Wizard","classic":false,"mood":"overwhelmed","ar":1,"k":1},{"id":"bennie","base":"/pals/bennie/guy-bored","bg":"/pals/bg/bennie.jpg","skin":"Benie","classic":false,"mood":"bored","ar":1,"k":1.5},{"id":"bennie","base":"/pals/bennie/guy-overwhelmed","bg":"/pals/bg/bennie.jpg","skin":"Benie","classic":false,"mood":"overwhelmed","ar":1,"k":1},{"id":"bennie","base":"/pals/bennie/girl-bored","bg":"/pals/bg/bennie.jpg","skin":"Benie","classic":false,"mood":"bored","ar":1,"k":1.5},{"id":"bennie","base":"/pals/bennie/girl-overwhelmed","bg":"/pals/bg/bennie.jpg","skin":"Benie","classic":false,"mood":"overwhelmed","ar":1,"k":1}];
+const appName = "Mochi";
+
+(function () {
+  // Where the visitor seems to be -> a skin that fits, or "" for any skin.
+  function homeSkin() {
+    var asked = new URLSearchParams(location.search).get("place");
+    if (asked) return asked;
+    var zone = "";
+    try { zone = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) {}
+    var lang = ((navigator.languages && navigator.languages[0]) || navigator.language || "").toLowerCase();
+    var eastAsia = /^Asia\/(Tokyo|Seoul|Pyongyang|Shanghai|Chongqing|Harbin|Urumqi|Hong_Kong|Macau|Taipei|Ulaanbaatar|Singapore|Bangkok|Ho_Chi_Minh|Saigon|Hanoi|Phnom_Penh|Vientiane|Yangon|Rangoon|Manila|Jakarta|Pontianak|Makassar|Jayapura|Kuala_Lumpur|Kuching|Brunei|Dili)$/;
+    var latin = /^(America\/(Mexico_City|Cancun|Merida|Monterrey|Matamoros|Chihuahua|Ciudad_Juarez|Hermosillo|Mazatlan|Bahia_Banderas|Tijuana|Guatemala|Belize|El_Salvador|Tegucigalpa|Managua|Costa_Rica|Panama|Havana|Santo_Domingo|Puerto_Rico|Bogota|Caracas|Guayaquil|Lima|La_Paz|Santiago|Punta_Arenas|Asuncion|Montevideo|Buenos_Aires|Cordoba|Argentina\/.+|Sao_Paulo|Bahia|Belem|Fortaleza|Recife|Maceio|Manaus|Cuiaba|Campo_Grande|Porto_Velho|Boa_Vista|Rio_Branco|Araguaina|Santarem|Noronha)|Pacific\/(Galapagos|Easter)|Europe\/Madrid|Atlantic\/Canary|Africa\/Ceuta)$/;
+    if (eastAsia.test(zone)) return "japan";
+    if (latin.test(zone)) return "dios";
+    // The time zone says nothing either way (a traveller, a shared zone): fall back on language.
+    if (/^(ja|ko|zh|vi|th|id|ms|fil|tl|km|lo|my|mn)\b/.test(lang)) return "japan";
+    if (/^(es|pt-br)\b/.test(lang)) return "dios";
+    return "";
+  }
+  var home = homeSkin();
+  var pool = clips.filter(function (x) { return x.id === home; });
+  if (!pool.length) pool = clips;
+  var c = pool[Math.floor(Math.random() * pool.length)];
+  // For checking one pal: add ?pal=dios/guy-bored to the address.
+  var want = new URLSearchParams(location.search).get("pal");
+  if (want) c = clips.filter(function (x) { return x.base === "/pals/" + want; })[0] || c;
+  var world = document.getElementById("pal-world");
+  var still = document.getElementById("pal-still");
+  var video = document.getElementById("pal-video");
+  var words = { bored: "Bored: nothing to do today", overwhelmed: "Overwhelmed: a missed task is on fire" };
+
+  world.src = c.bg;
+  [still, video].forEach(function (el) {
+    el.style.setProperty("--ar", c.ar);
+    el.style.setProperty("--k", c.k);
+  });
+  still.src = c.base + ".webp";
+  document.getElementById("pal-mood").textContent = words[c.mood] + (c.classic ? "" : " · " + c.skin + " skin");
+
+  // Someone who asked their device for less motion gets the still picture only.
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  // Safari, and every browser on iPhone and iPad, plays see-through video only as HEVC (.mov).
+  // The others get WebM. (On iPhone, Chrome says "CriOS", not "Chrome", so this test holds.)
+  var ua = navigator.userAgent;
+  var webkit = /AppleWebKit/.test(ua) && !/(Chrome|Chromium)\//.test(ua);
+  video.addEventListener("playing", function () {
+    video.classList.add("on");
+    still.classList.add("off");
+  }, { once: true });
+  video.src = c.base + (webkit ? ".mov" : ".webm");
+  var started = video.play();
+  if (started && started.catch) started.catch(function () {});   // autoplay refused: the still stays
+})();
+})();</script></div></div></section><section class="floor" id="list" aria-label="What Mochi does, as a todo list"><div class="hill" aria-hidden="true" data-astro-cid-fsosadq3><svg viewBox="0 0 1440 90" preserveAspectRatio="none" data-astro-cid-fsosadq3><path fill="var(--moss-light)" d="M0 46C150 12 300 6 470 30c170 24 300 34 470 8 170-26 330-30 500 6V90H0z" data-astro-cid-fsosadq3></path></svg><svg viewBox="0 0 1440 90" preserveAspectRatio="none" data-astro-cid-fsosadq3><path fill="var(--moss)" d="M0 62C200 26 380 22 560 46c180 24 330 30 520 6 150-19 250-18 360 2V90H0z" data-astro-cid-fsosadq3></path></svg></div><div class="floor-in"><div class="wrap grid"><aside class="rail" aria-label="Hearts earned by reading this page"><ol class="hearts" id="hearts"><li><img src="/images/app/heart-empty.png" alt="" width="44" height="40"><img class="full" src="/images/app/heart-full.png" alt="" width="44" height="40"></li><li><img src="/images/app/heart-empty.png" alt="" width="44" height="40"><img class="full" src="/images/app/heart-full.png" alt="" width="44" height="40"></li><li><img src="/images/app/heart-empty.png" alt="" width="44" height="40"><img class="full" src="/images/app/heart-full.png" alt="" width="44" height="40"></li><li><img src="/images/app/heart-empty.png" alt="" width="44" height="40"><img class="full" src="/images/app/heart-full.png" alt="" width="44" height="40"></li><li><img src="/images/app/heart-empty.png" alt="" width="44" height="40"><img class="full" src="/images/app/heart-full.png" alt="" width="44" height="40"></li><li><img src="/images/app/heart-empty.png" alt="" width="44" height="40"><img class="full" src="/images/app/heart-full.png" alt="" width="44" height="40"></li><li><img src="/images/app/heart-empty.png" alt="" width="44" height="40"><img class="full" src="/images/app/heart-full.png" alt="" width="44" height="40"></li></ol><p class="rail-count" id="rail-count">0 of 7</p><button class="rail-gift" id="rail-gift" type="button" hidden aria-label="Open the present"><img src="/images/app/present.png" alt="" width="162" height="131"></button></aside><div class="sheet"><header class="sheet-head"><p class="sheet-day" id="sheet-day">Today</p><p class="sheet-note">Seven things on the list. Reading counts as doing.</p></header><ol class="tasks"><li class="task" id="meet" data-task><div class="task-head"><button class="box" type="button" aria-pressed="false" aria-label="Meet your pal: mark as done"><svg class="icon " width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button><h2 class="task-title"><span>Meet your pal</span></h2></div><div class="task-body"><div class="task-say"><p>Your pal lives in your todo list and feels your day.</p><p>Nothing to do? <b>Bored.</b> A task you missed? <b>Overwhelmed.</b> All caught up? <b>Calm again.</b></p><p class="try">Try it. Add a task, tick it, or skip a day. (Missed tasks come along when “Move unfinished items” is on in Settings.)</p></div><div class="task-show"><div class="mood" id="mood"><div class="mood-stage"><p class="bubble" id="mood-say" aria-live="polite">Got anything for us to do?</p><img class="mood-pal" id="mood-still" src="/pals/classic/guy-bored.webp" alt=""><video class="mood-pal" id="mood-video" muted loop playsinline preload="none" aria-hidden="true"></video></div><div class="mood-list"><p class="label mood-day" id="mood-day">Today</p><ul id="mood-items" aria-label="Your tasks in this demo"></ul><p class="mood-empty" id="mood-empty">Nothing on the list.</p><div class="mood-actions"><button class="btn small" id="mood-add" type="button"><svg class="icon " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"></path></svg> Add a task</button><button class="btn small quiet" id="mood-skip" type="button"><svg class="icon " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19.500 14.200A7.800 7.800 0 0 1 9.800 4.500a7.800 7.800 0 1 0 9.700 9.700z"></path></svg> Skip a day</button></div></div></div></div></div></li><li class="task" id="week" data-task><div class="task-head"><button class="box" type="button" aria-pressed="false" aria-label="Plan your week: mark as done"><svg class="icon " width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button><h2 class="task-title"><span>Plan your week</span></h2></div><div class="task-body"><div class="task-say"><p>Give each task its days: once, or reoccurring on the days you pick.</p><p>Turn on “Move unfinished items” in Settings, and a task you miss comes along to the next day with a little flame on it.</p></div><div class="task-show"><div class="shots"><figure><div class="shot"><img src="/images/screens/add.jpg" width="540" height="1174" loading="lazy" alt="Mochi's Add To-Do screen. The task “Go to the gym” is set to reoccurring on Monday, Wednesday and Friday."></div><figcaption>Pick the days.</figcaption></figure><figure><div class="shot"><img src="/images/screens/todo.jpg" width="540" height="1174" loading="lazy" alt="Mochi's Todo screen showing Sunday's four tasks. “Fix the bike” has a small flame because it was missed the day before; “Call mom” is ticked."></div><figcaption>Today's list. The flame means it was missed.</figcaption></figure></div></div></div></li><li class="task" id="queue" data-task><div class="task-head"><button class="box" type="button" aria-pressed="false" aria-label="Empty your head: mark as done"><svg class="icon " width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button><h2 class="task-title"><span>Empty your head</span></h2></div><div class="task-body"><div class="task-say"><p>Not sure when? Put it in the Backlog and stop carrying it around. Backlog tasks never count against your day.</p><p>Turn on auto distribute and Mochi places them on your least busy days.</p></div><div class="task-show"><div class="drop" id="drop"><div class="shot" role="img" aria-label="Mochi's Todo screen filling up with five tasks from the Backlog: Renew passport, Clean the oven, Send the gift, Sort the photos, Fix the tap."><img class="drop-base" src="/images/screens/todo-empty.jpg" alt="" width="540" height="1174" loading="lazy"><img class="drop-row" src="/images/screens/row1.jpg" alt="" loading="lazy" style="left:5.39%;top:17.773%;width:88.806%;height:6.064%"><img class="drop-row" src="/images/screens/row2.jpg" alt="" loading="lazy" style="left:5.39%;top:24.409%;width:88.806%;height:6.064%"><img class="drop-row" src="/images/screens/row3.jpg" alt="" loading="lazy" style="left:5.39%;top:31.045%;width:88.806%;height:6.064%"><img class="drop-row" src="/images/screens/row4.jpg" alt="" loading="lazy" style="left:5.39%;top:37.681%;width:88.806%;height:6.064%"><img class="drop-row" src="/images/screens/row5.jpg" alt="" loading="lazy" style="left:5.39%;top:44.317%;width:88.806%;height:6.064%"></div><p class="drop-cap">Keep scrolling. They land in your list one by one.</p></div></div></div></li><li class="task" id="partner" data-task><div class="task-head"><button class="box" type="button" aria-pressed="false" aria-label="Bring someone, if you like: mark as done"><svg class="icon " width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button><h2 class="task-title"><span>Bring someone, if you like</span></h2></div><div class="task-body"><div class="task-say"><p>Mochi works fine on your own. It is also good with one other person.</p><p>Link up, share the tasks you choose, suggest tasks to each other, and leave short love notes. Either of you can unlink at any time.</p></div><div class="task-show"><div class="pair"><img class="pair-pal" src="/pals/classic/shelf.webp" alt="" width="480" height="864" loading="lazy"><div class="pair-mid"><p class="pair-task"><span class="dot on"><svg class="icon " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="dot"></span> Water the plants</p><button class="pair-gift" id="pair-gift" type="button" aria-expanded="false" aria-controls="pair-note" aria-label="Open the love note"><img src="/images/app/present.png" alt="" width="162" height="131" loading="lazy"></button><p class="pair-note" id="pair-note" hidden>Proud of you today.</p></div><img class="pair-pal" src="/images/app/girl-calm.webp" alt="" width="480" height="864" loading="lazy"></div></div></div></li><li class="task" id="hearts-task" data-task><div class="task-head"><button class="box" type="button" aria-pressed="false" aria-label="Earn your hearts: mark as done"><svg class="icon " width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button><h2 class="task-title"><span>Earn your hearts</span></h2></div><div class="task-body"><div class="task-say"><p>Finish every task in a day and you earn a heart. Seven hearts open the present.</p><p>Finished tasks also pay Mochi Bucks, and a crystal drops in each morning with a small surprise.</p></div><div class="task-show"><div class="earned"><ol class="earned-hearts" id="earned-hearts" aria-hidden="true"><li><img src="/images/app/heart-empty.png" alt="" width="44" height="40" loading="lazy"><img class="full" src="/images/app/heart-full.png" alt="" width="44" height="40" loading="lazy"></li><li><img src="/images/app/heart-empty.png" alt="" width="44" height="40" loading="lazy"><img class="full" src="/images/app/heart-full.png" alt="" width="44" height="40" loading="lazy"></li><li><img src="/images/app/heart-empty.png" alt="" width="44" height="40" loading="lazy"><img class="full" src="/images/app/heart-full.png" alt="" width="44" height="40" loading="lazy"></li><li><img src="/images/app/heart-empty.png" alt="" width="44" height="40" loading="lazy"><img class="full" src="/images/app/heart-full.png" alt="" width="44" height="40" loading="lazy"></li><li><img src="/images/app/heart-empty.png" alt="" width="44" height="40" loading="lazy"><img class="full" src="/images/app/heart-full.png" alt="" width="44" height="40" loading="lazy"></li><li><img src="/images/app/heart-empty.png" alt="" width="44" height="40" loading="lazy"><img class="full" src="/images/app/heart-full.png" alt="" width="44" height="40" loading="lazy"></li><li><img src="/images/app/heart-empty.png" alt="" width="44" height="40" loading="lazy"><img class="full" src="/images/app/heart-full.png" alt="" width="44" height="40" loading="lazy"></li></ol><p class="earned-line"><span id="earned-line">You have 0 of 7 on this page.</span> <img class="earned-gift" id="earned-gift" src="/images/app/present.png" alt="" width="162" height="131" loading="lazy"></p><ul class="perks"><li><img src="/images/app/coin.png" alt="" width="100" height="93" loading="lazy"><span>Mochi Bucks for each task you finish.</span></li><li><img src="/images/app/crystal.png" alt="" width="320" height="420" loading="lazy"><span id="crystal-line">A crystal each morning. Open it before it's gone.</span></li></ul></div></div></div></li><li class="task" id="worlds" data-task><div class="task-head"><button class="box" type="button" aria-pressed="false" aria-label="Dress up your pal: mark as done"><svg class="icon " width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button><h2 class="task-title"><span>Dress up your pal</span></h2></div><div class="task-body"><div class="task-say"><p>Trade Mochi Bucks for skins. A skin changes your pal and the whole world around them.</p><p>New skins are added every week.</p><p class="try">Six worlds so far. Point at one to wake it up.</p></div><div class="task-show"><ul class="shelf" id="shelf"><li><button class="world" type="button" data-base="/pals/classic/shelf" aria-label="Classic skin: play"><img class="world-bg" src="/pals/bg/classic.jpg" alt="" width="830" height="1800" loading="lazy"><img class="world-pal" src="/pals/classic/shelf.webp" alt="" loading="lazy" style="--ar:0.5556;--k:1"></button><span class="label">Classic</span></li><li><button class="world" type="button" data-base="/pals/bennie/shelf" aria-label="Benie skin: play"><img class="world-bg" src="/pals/bg/bennie.jpg" alt="" width="830" height="1800" loading="lazy"><img class="world-pal" src="/pals/bennie/shelf.webp" alt="" loading="lazy" style="--ar:1;--k:1"></button><span class="label">Benie</span></li><li><button class="world" type="button" data-base="/pals/cyberpunk/shelf" aria-label="Cyberpunk skin: play"><img class="world-bg" src="/pals/bg/cyberpunk.jpg" alt="" width="830" height="1800" loading="lazy"><img class="world-pal" src="/pals/cyberpunk/shelf.webp" alt="" loading="lazy" style="--ar:1;--k:1"></button><span class="label">Cyberpunk</span></li><li><button class="world" type="button" data-base="/pals/dios/shelf" aria-label="Dios skin: play"><img class="world-bg" src="/pals/bg/dios.jpg" alt="" width="830" height="1800" loading="lazy"><img class="world-pal" src="/pals/dios/shelf.webp" alt="" loading="lazy" style="--ar:1;--k:1"></button><span class="label">Dios</span></li><li><button class="world" type="button" data-base="/pals/japan/shelf" aria-label="Japan skin: play"><img class="world-bg" src="/pals/bg/japan.jpg" alt="" width="830" height="1800" loading="lazy"><img class="world-pal" src="/pals/japan/shelf.webp" alt="" loading="lazy" style="--ar:1;--k:1"></button><span class="label">Japan</span></li><li><button class="world" type="button" data-base="/pals/wizard/shelf" aria-label="Wizard skin: play"><img class="world-bg" src="/pals/bg/wizard.jpg" alt="" width="830" height="1800" loading="lazy"><img class="world-pal" src="/pals/wizard/shelf.webp" alt="" loading="lazy" style="--ar:1;--k:1"></button><span class="label">Wizard</span></li></ul></div></div></li><li class="task" id="get" data-task data-locked><div class="task-head"><button class="box" type="button" aria-pressed="false" aria-label="Get Mochi: mark as done" disabled><svg class="icon " width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></button><h2 class="task-title"><span>Get Mochi</span></h2></div><div class="task-body"><div class="task-say"><p>Mochi is in testing on TestFlight. Leave your email and we'll send you an invite.</p><p>Got a friend's invite? Tap the link they sent you. It opens Mochi and tells them you joined.</p></div><div class="task-show"><div class="get"><img class="get-pal" id="get-pal" src="/pals/classic/guy-bored.webp" alt="" width="768" height="870" loading="lazy"><div class="get-do"><p class="get-note" id="get-note">One heart left. It is this one.</p><form class="access" id="access" novalidate><label class="label" for="access-email">Your email</label><div class="access-row"><input id="access-email" name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" placeholder="you@example.com" maxlength="254" required><input class="access-trap" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true"><button class="btn gold" type="submit" id="access-go">Request access</button></div><p class="access-msg" id="access-msg" role="status" aria-live="polite"></p><p class="access-fine">Used only to send your TestFlight invite. <a href="/privacy/#website">How we handle it</a>.</p></form></div></div></div></div></li></ol></div></div><div class="floor-art" aria-hidden="true"><div class="hill" aria-hidden="true" data-astro-cid-fsosadq3><svg viewBox="0 0 1440 90" preserveAspectRatio="none" data-astro-cid-fsosadq3><path fill="var(--moss-deep)" d="M0 62C200 26 380 22 560 46c180 24 330 30 520 6 150-19 250-18 360 2V90H0z" data-astro-cid-fsosadq3></path></svg></div></div></div></section></main><footer class="site-footer" data-astro-cid-jo6i4kqk><div class="ground" data-astro-cid-jo6i4kqk><div class="wrap inner" data-astro-cid-jo6i4kqk><div class="who" data-astro-cid-jo6i4kqk><img src="/images/logotype.png" alt="Mochi" width="126" height="44" data-astro-cid-jo6i4kqk><p id="foot-line" data-astro-cid-jo6i4kqk>Your todo list, with a pal who cares.</p></div><nav aria-label="Footer" data-astro-cid-jo6i4kqk><ul data-astro-cid-jo6i4kqk><li data-astro-cid-jo6i4kqk><a href="/support/" data-astro-cid-jo6i4kqk>Support</a></li><li data-astro-cid-jo6i4kqk><a href="/privacy/" data-astro-cid-jo6i4kqk>Privacy</a></li><li data-astro-cid-jo6i4kqk><a href="/eula/" data-astro-cid-jo6i4kqk>Terms</a></li><li data-astro-cid-jo6i4kqk><a href="/community/" data-astro-cid-jo6i4kqk>Community rules</a></li><li data-astro-cid-jo6i4kqk><a href="/delete-account/" data-astro-cid-jo6i4kqk>Delete account</a></li></ul></nav><p class="fine" data-astro-cid-jo6i4kqk>© 2026 Mochi. Made for iPhone.</p></div></div></footer></body></html><script>(function(){const lines = {"idle":["Tiny steps still count!","I like it here with you.","Today feels like a good day."],"bored":["Got anything for us to do?","Sooo bored… add a task?","My paws are itching to help."],"overwhelmed":["Phew, that's a big pile…","One at a time. We've got this.","Deep breath with me?"],"taskDone":["Yay! One down!","Look at you go!","Done and dusted!"],"overwhelmedTaskDone":["One less! I can breathe again.","Ahh, lighter already. Thank you!"],"calmAgain":["All caught up. So calm now!","We did it! Calm day unlocked."]};
+const ideas = ["Water the plants","Call mom","Fold the laundry","Buy oat milk","Reply to Sam","Book the dentist","Take out the trash","Stretch for ten minutes"];
+const hasDownload = false;
+const tagline = "Your todo list, with a pal who cares.";
+const appName = "Mochi";
+const accessUrl = "https://eepvspirsftjqhtxdshv.supabase.co/functions/v1/request-access";
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Safari (and every browser on iPhone) plays see-through video only as HEVC .mov; the rest get WebM.
+  var ua = navigator.userAgent;
+  var webkit = /AppleWebKit/.test(ua) && !/(Chrome|Chromium)\//.test(ua);
+  function clip(base) { return base + (webkit ? ".mov" : ".webm"); }
+  function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
+
+  var DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  var now = new Date();
+  var dow = now.getDay();            // 0 = Sunday
+  var col = (dow + 6) % 7;           // 0 = Monday, the way the app's week runs
+  $("sheet-day").textContent = DAYS[dow];
+
+  // ---------------------------------------------------------------- the list ticks itself
+  var tasks = Array.prototype.slice.call(document.querySelectorAll("[data-task]"));
+  var hearts = Array.prototype.slice.call(document.querySelectorAll("#hearts li"));
+  var mirror = Array.prototype.slice.call(document.querySelectorAll("#earned-hearts li"));
+  var done = tasks.map(function () { return false; });
+  var byHand = tasks.map(function () { return false; });
+  var total = tasks.length, last = total - 1;
+  var footLine = $("foot-line"), tally = $("tally");
+
+  function render() {
+    var n = done.filter(Boolean).length;
+    tasks.forEach(function (t, i) {
+      t.classList.toggle("done", done[i]);
+      t.querySelector(".box").setAttribute("aria-pressed", done[i] ? "true" : "false");
+    });
+    hearts.forEach(function (h, i) { h.classList.toggle("on", i < n); });
+    mirror.forEach(function (h, i) { h.classList.toggle("on", i < n); });
+    $("earned-line").textContent = n === total ? "All seven. The present is open." : "You have " + n + " of " + total + " on this page.";
+    $("earned-gift").classList.toggle("open", n === total);
+    $("get-pal").src = done[last] ? "/pals/classic/shelf.webp" : "/pals/classic/guy-bored.webp";
+    $("rail-count").textContent = n + " of " + total;
+    $("rail-gift").hidden = n < total;
+    if (tally) {
+      tally.hidden = n === 0;
+      $("tally-count").textContent = n + "/" + total;
+      tally.classList.remove("bump"); void tally.offsetWidth; tally.classList.add("bump");
+    }
+    if (footLine) {
+      footLine.textContent = n === 0 ? tagline
+        : n === total ? "All " + total + " done. Your pal is so calm now."
+        : n === total - 1 && !done[last] ? n + " of " + total + " done. One left: get " + appName + "."
+        : n + " of " + total + " done. Keep going.";
+    }
+    $("get-note").textContent = done[last] ? "That's all seven. See you inside."
+      : n === total - 1 ? "One heart left. It is this one." : (total - n) + " hearts to go.";
+  }
+  function set(i, value, hand) {
+    if (hand) byHand[i] = true;
+    if (done[i] === value) return;
+    done[i] = value;
+    render();
+  }
+  tasks.forEach(function (t, i) {
+    t.querySelector(".box").addEventListener("click", function () { set(i, !done[i], true); });
+  });
+  // A task ticks as you scroll past it: the moment its checkbox row rises above the middle of
+  // the window. Scrolling never unticks, and never overrides a box you set yourself. The last
+  // task is ticked by doing it. When several pass at once (a jump down the page), they tick one
+  // after another, top to bottom.
+  var waiting = false, queued = [], draining = false;
+  function drain() {
+    if (!queued.length) { draining = false; return; }
+    draining = true;
+    var i = queued.shift();
+    if (!done[i] && !byHand[i]) set(i, true, false);
+    setTimeout(drain, reduce ? 0 : 140);
+  }
+  function scrolledPast() {
+    waiting = false;
+    var line = window.innerHeight * 0.45;
+    tasks.forEach(function (t, i) {
+      if (i === last || done[i] || byHand[i] || queued.indexOf(i) !== -1) return;
+      var head = t.querySelector(".task-head").getBoundingClientRect();
+      if (head.top + head.height / 2 < line) queued.push(i);
+    });
+    if (queued.length && !draining) drain();
+  }
+  window.addEventListener("scroll", function () { if (!waiting) { waiting = true; requestAnimationFrame(scrolledPast); } }, { passive: true });
+  window.addEventListener("resize", scrolledPast);
+  var getLink = tasks[last].querySelector("a.btn");
+  if (getLink) getLink.addEventListener("click", function () { set(last, true, true); });
+  $("rail-gift").addEventListener("click", function () { $("rail-count").textContent = "See you inside"; });
+
+  // ---------------------------------------------------------------- request access
+  // The email goes to our own server (the request-access function) and nowhere else. Asking is
+  // what ticks the last task. The device remembers that it asked, so the box isn't shown again.
+  var form = $("access");
+  if (form && accessUrl) {
+    var emailEl = $("access-email"), msg = $("access-msg"), go = $("access-go");
+    var asked = false;
+    try { asked = localStorage.getItem("mochi-access") === "1"; } catch (e) {}
+    function thanks(text) {
+      form.classList.add("sent");
+      msg.textContent = text;
+      set(last, true, true);
+    }
+    if (asked) thanks("You're on the list. Watch your inbox for a TestFlight invite.");
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      // The same plain-email rule the server enforces. This copy only saves a round trip; the
+      // server and the database are what actually refuse anything else.
+      var email = emailEl.value.trim().toLowerCase();
+      if (email.length > 254 || email.indexOf("..") !== -1 ||
+          !/^[a-z0-9](?:[a-z0-9._+-]{0,62}[a-z0-9])?@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}$/.test(email)) {
+        msg.textContent = "That email doesn't look right. Check it and try again.";
+        emailEl.focus();
+        return;
+      }
+      go.disabled = true; msg.textContent = "Sending…";
+      fetch(accessUrl, { method: "POST", headers: { "Content-Type": "application/json" },
+                         body: JSON.stringify({ email: email, website: form.elements.website.value }) })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (d.status === "ok") {
+            try { localStorage.setItem("mochi-access", "1"); } catch (e) {}
+            thanks("You're on the list. Watch your inbox for a TestFlight invite.");
+          } else if (d.status === "invalid") {
+            msg.textContent = "That email doesn't look right. Check it and try again."; go.disabled = false; emailEl.focus();
+          } else if (d.status === "rate_limited") {
+            msg.textContent = "Too many tries just now. Give it an hour and try again."; go.disabled = false;
+          } else { throw new Error("status"); }
+        })
+        .catch(function () { msg.textContent = "Couldn't reach us just now. Try again in a minute."; go.disabled = false; });
+    });
+    // The "Request access" buttons elsewhere on the page jump here and put the cursor in the box.
+    Array.prototype.forEach.call(document.querySelectorAll("[data-request-access]"), function (a) {
+      a.addEventListener("click", function () { setTimeout(function () { if (!form.classList.contains("sent")) emailEl.focus({ preventScroll: true }); }, 700); });
+    });
+  }
+  render(); scrolledPast();
+
+  // The small logo in the header stays tucked away while the big one in the hero is on screen.
+  var header = document.querySelector(".site-header"), bigLogo = document.querySelector(".hero .logo");
+  if (header && bigLogo && bigLogo.offsetParent !== null && "IntersectionObserver" in window) {
+    header.classList.add("tucked");
+    new IntersectionObserver(function (seen) { header.classList.toggle("tucked", seen[0].isIntersecting); },
+      { rootMargin: "-64px 0px 0px 0px" }).observe(bigLogo);
+  }
+
+  // While you are in another tab, your pal gets bored. (Look at the tab's name.)
+  var realTitle = document.title;
+  document.addEventListener("visibilitychange", function () {
+    document.title = document.hidden ? "Your pal is bored…" : realTitle;
+  });
+
+  // ---------------------------------------------------------------- 1. the mood demo
+  // The app's own rule: no tasks today = bored; a missed task on fire = overwhelmed; else calm.
+  var CLIPS = {
+    bored: { base: "/pals/classic/guy-bored", ar: 0.8828 },
+    overwhelmed: { base: "/pals/classic/guy-overwhelmed", ar: 0.5556 },
+    idle: { base: "/pals/classic/shelf", ar: 0.5556 },
+  };
+  var items = [], demoDay = dow, shown = "", seenDemo = false, ideaAt = 0;
+  var listEl = $("mood-items"), sayEl = $("mood-say"), stillEl = $("mood-still"), videoEl = $("mood-video");
+  function mood() {
+    if (items.some(function (t) { return t.fire && !t.done; })) return "overwhelmed";
+    return items.length ? "idle" : "bored";
+  }
+  function say(text) {
+    sayEl.textContent = text;
+    sayEl.classList.remove("pop"); void sayEl.offsetWidth; sayEl.classList.add("pop");
+  }
+  function showPal() {
+    var m = mood();
+    if (m === shown) return;
+    shown = m;
+    var c = CLIPS[m];
+    [stillEl, videoEl].forEach(function (el) { el.style.setProperty("--ar", c.ar); });
+    stillEl.classList.remove("off"); videoEl.classList.remove("on");
+    stillEl.src = c.base + ".webp";
+    if (reduce || !seenDemo) return;
+    videoEl.src = clip(c.base);
+    var p = videoEl.play(); if (p && p.catch) p.catch(function () {});
+  }
+  videoEl.addEventListener("playing", function () { videoEl.classList.add("on"); stillEl.classList.add("off"); });
+  function draw() {
+    listEl.textContent = "";
+    // As in the app: unfinished tasks first, finished ones at the bottom.
+    var order = items.map(function (t, i) { return i; }).sort(function (x, y) { return (items[x].done - items[y].done) || (x - y); });
+    order.forEach(function (i) {
+      var t = items[i];
+      var li = document.createElement("li");
+      if (t.done) li.className = "done";
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "mbox";
+      b.setAttribute("aria-pressed", t.done ? "true" : "false");
+      b.setAttribute("aria-label", t.text + (t.done ? ": done" : ": mark as done"));
+      b.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+      b.addEventListener("click", function () { tick(i); });
+      li.appendChild(b);
+      if (t.fire && !t.done) {
+        var f = document.createElement("img");
+        f.className = "flame"; f.src = "/images/screens/flame.png"; f.alt = "Missed yesterday"; f.width = 18; f.height = 21;
+        li.appendChild(f);
+      }
+      var s = document.createElement("span"); s.textContent = t.text;
+      li.appendChild(s);
+      listEl.appendChild(li);
+    });
+    $("mood-empty").hidden = items.length > 0;
+    $("mood-add").disabled = items.length >= 5;
+    $("mood-day").textContent = DAYS[demoDay % 7];
+    showPal();
+  }
+  function tick(i) {
+    var before = mood();
+    items[i].done = !items[i].done;
+    draw();
+    if (!items[i].done) return;
+    say(before === "overwhelmed" ? pick(mood() === "overwhelmed" ? lines.overwhelmedTaskDone : lines.calmAgain) : pick(lines.taskDone));
+  }
+  $("mood-add").addEventListener("click", function () {
+    if (items.length >= 5) return;
+    items.push({ text: ideas[ideaAt++ % ideas.length], done: false, fire: false });
+    draw();
+    say(mood() === "overwhelmed" ? pick(lines.overwhelmed) : pick(lines.idle));
+  });
+  $("mood-skip").addEventListener("click", function () {
+    // A new day: finished tasks are gone; unfinished ones come along, on fire.
+    items = items.filter(function (t) { return !t.done; }).map(function (t) { t.fire = true; return t; });
+    demoDay++;
+    draw();
+    say(pick(lines[mood()]));
+  });
+  draw();
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (seen, io) {
+      if (!seen[0].isIntersecting) return;
+      io.disconnect(); seenDemo = true; shown = ""; showPal();
+    }, { rootMargin: "200px" }).observe($("mood"));
+  } else { seenDemo = true; shown = ""; showPal(); }
+
+  // ---------------------------------------------------------------- 3. the backlog lands in the list
+  // The picture is the app's real Todo screen; the five rows are cut from a real capture of it.
+  // How far you have scrolled through the picture decides how many rows have landed, so they
+  // drop in one by one going down and lift out again going back up.
+  var dropEl = $("drop"), dropRows = Array.prototype.slice.call(dropEl.querySelectorAll(".drop-row"));
+  var dropWaiting = false;
+  function dropNow() {
+    dropWaiting = false;
+    var r = dropEl.getBoundingClientRect(), vh = window.innerHeight;
+    var progress = (vh * 0.88 - r.top) / (vh * 0.62);        // 0 as it enters at the bottom, 1 well before it leaves
+    var landed = Math.max(0, Math.min(dropRows.length, Math.floor(progress * (dropRows.length + 0.6))));
+    dropRows.forEach(function (row, i) { row.classList.toggle("in", i < landed); });
+  }
+  window.addEventListener("scroll", function () { if (!dropWaiting) { dropWaiting = true; requestAnimationFrame(dropNow); } }, { passive: true });
+  window.addEventListener("resize", dropNow);
+  dropNow();
+
+  // ---------------------------------------------------------------- 4. the love note
+  $("pair-gift").addEventListener("click", function () {
+    var note = $("pair-note"), open = note.hidden;
+    note.hidden = !open;
+    this.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+
+  // ---------------------------------------------------------------- 5. crystal time
+  // In the app the daily crystal lands at 9:00 and is gone three hours later (DailyCrystalService).
+  var hour = now.getHours();
+  if (hour >= 9 && hour < 12) $("crystal-line").textContent = "It is crystal time right now. One lands at nine and is gone by noon.";
+
+  // ---------------------------------------------------------------- 6. the worlds wake up
+  Array.prototype.forEach.call(document.querySelectorAll("#shelf .world"), function (card) {
+    var video = null;
+    function wake() {
+      card.classList.add("live");
+      if (reduce) return;
+      if (!video) {
+        var still = card.querySelector("img.world-pal");
+        video = document.createElement("video");
+        video.className = "world-pal"; video.muted = true; video.loop = true; video.playsInline = true;
+        video.setAttribute("playsinline", ""); video.setAttribute("aria-hidden", "true");
+        video.style.cssText = still.getAttribute("style");
+        video.addEventListener("playing", function () { video.classList.add("on"); card.classList.add("playing"); });
+        video.src = clip(card.getAttribute("data-base"));
+        card.appendChild(video);
+      }
+      var p = video.play(); if (p && p.catch) p.catch(function () {});
+    }
+    function rest() { card.classList.remove("live"); if (video) video.pause(); }
+    card.addEventListener("pointerenter", wake);
+    card.addEventListener("pointerleave", rest);
+    card.addEventListener("focus", wake);
+    card.addEventListener("blur", rest);
+    card.addEventListener("click", wake);
+  });
+})();
+})();</script>

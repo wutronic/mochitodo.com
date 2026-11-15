@@ -1,0 +1,13 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["GDDTCQUHWC.ritual.HeartPals"],
+        "components": [
+          { "/": "/join/*", "comment": "Friend invite links open the app when it is installed" },
+          { "/": "/join", "comment": "Same, without the trailing slash" }
+        ]
+      }
+    ]
+  }
+}
