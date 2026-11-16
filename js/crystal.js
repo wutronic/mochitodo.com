@@ -26,7 +26,8 @@
   var total = document.getElementById("crystal-total"), totalNum = document.getElementById("crystal-total-n");
   var hint = stage.querySelector(".crystal-hint");
   var win = document.getElementById("crystal-win"), winHead = document.getElementById("crystal-win-head");
-  var winText = document.getElementById("crystal-win-text"), winTimer = document.getElementById("crystal-win-timer");
+  var winText = document.getElementById("crystal-win-text");
+  var present = document.getElementById("crystal-present"), dock = document.getElementById("present-dock");
   var leftEl = document.getElementById("crystal-left"), claim = document.getElementById("crystal-claim");
   var rollUrl = stage.getAttribute("data-roll");
   var HINT = hint.textContent, KEY = "mochi-crystal";
@@ -94,30 +95,87 @@
     window.dispatchEvent(new CustomEvent("mochi-crystal"));
   }
   function clock2(n) { return (n < 10 ? "0" : "") + n; }
+  /* The present. Until the win is claimed it waits wrapped (and shaking) where the crystal was.
+     On a fresh win the total tucks away and the present drops in over it; once the win is saved
+     to an email, the present opens and the total is shown again. */
+  var wrapped = false;
+  function wrap(on, opened) {
+    if (on === wrapped) return;
+    wrapped = on;
+    if (on) {
+      present.hidden = false;
+      stage.classList.add("wrapped");
+      if (drop && drop.burstAt !== null && !reduce) stage.classList.add("fresh");   // just won, on this visit
+    } else if (opened && !reduce) {
+      stage.classList.add("opening");
+      if (!dock.hidden) dock.classList.add("opening");
+      setTimeout(function () {
+        stage.classList.remove("opening", "wrapped", "fresh"); present.hidden = true;
+        dock.classList.remove("opening"); dockCheck();
+      }, 600);
+      return;
+    } else {
+      stage.classList.remove("wrapped", "fresh"); present.hidden = true;
+    }
+    dockCheck();
+  }
+
+  /* Once the wrapped present scrolls off the top of the screen it waits in the bottom-right
+     corner, shaking, and now and then says to claim it. The bubble keeps quiet once the sign-up
+     form is on screen (or already passed): "below" would no longer be true. */
+  var passed = false, formReached = false, sayTimer = 0;
+  function dockCheck() {
+    var on = wrapped && passed && !stage.classList.contains("opening");
+    if (dock.classList.contains("opening")) return;
+    if (on === !dock.hidden) return;
+    dock.hidden = !on;
+    clearTimeout(sayTimer); dock.classList.remove("say");
+    if (on) sayTimer = setTimeout(say, 1600);
+  }
+  function say() {
+    if (dock.hidden) return;
+    dock.classList.toggle("say", !formReached);
+    sayTimer = setTimeout(function () { dock.classList.remove("say"); sayTimer = setTimeout(say, 8000); }, 4500);
+  }
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (entries) {
+      var e = entries[0];
+      passed = !e.isIntersecting && e.boundingClientRect.top < 0;
+      dockCheck();
+    }).observe(stage);
+    var form = document.getElementById("access") || document.getElementById("get");
+    if (form) new IntersectionObserver(function (entries) {
+      var e = entries[0];
+      formReached = e.isIntersecting || e.boundingClientRect.top < 0;
+      if (formReached) dock.classList.remove("say");
+    }).observe(form);
+  }
+
   /* The panel under the stage: what you won, that it is yours, and how long you have. */
   function showWin() {
     var has = !!won && (!drop || drop.done);               // not until the burst has played out
     win.hidden = !has; total.hidden = !has;
     stage.classList.toggle("won", has);
-    if (!has) return;
+    if (!has) { wrap(false); return; }
     var gone = ranOut(won);
+    wrap(!gone && !won.saved, won.saved);
     stage.classList.toggle("gone", gone);
     bucksEl.textContent = gone ? 0 : won.amount; totalNum.textContent = won.amount; fillHearts(gone ? 0 : won.hearts);
-    winTimer.hidden = true; claim.hidden = true;
+    claim.hidden = true;
     if (gone) {
       winHead.textContent = won.why ? "Your crystal is spent." : "Your crystal ran out.";
-      winText.textContent = won.why === "has_one" ? "The email you signed up with already had a crystal's win saved, so it keeps that one."
-        : won.why === "used" ? "This crystal's win was already saved to another email."
-        : "It paid " + won.amount + " Mochi Bucks and " + heartWord(won.hearts) + ", but they were not claimed within 24 hours. You can still sign up below.";
+      winText.textContent = won.why === "has_one" ? "Your email already has a crystal prize, so it keeps that one."
+        : won.why === "used" ? "This prize was already saved to another email."
+        : "It paid " + won.amount + " Mochi Bucks and " + heartWord(won.hearts) + ", but the hour ran out. You can still sign up below.";
     } else if (won.saved) {
       winHead.textContent = won.amount + " Mochi Bucks and " + heartWord(won.hearts) + ". They're yours.";
-      winText.textContent = "They are saved to the email you signed up with. Log in to the app with that email and they are added to your account.";
+      winText.textContent = "They're saved to your email. Log in to the app with it to get them.";
     } else {
       winHead.textContent = won.amount + " Mochi Bucks and " + heartWord(won.hearts) + ". They're yours.";
-      winText.textContent = "You get one crystal, and this is what it paid. Sign up now and they are added to your account the first time you log in to the app with the same email.";
-      winTimer.hidden = false; claim.hidden = false;
+      winText.textContent = "Sign up, then log in to the app with the same email to get them.";
+      claim.hidden = false;
       var left = Math.max(0, Math.floor((won.expires - Date.now()) / 1000));
-      leftEl.textContent = clock2(Math.floor(left / 3600)) + ":" + clock2(Math.floor(left / 60) % 60) + ":" + clock2(left % 60);
+      leftEl.textContent = (left >= 3600 ? Math.floor(left / 3600) + ":" : "") + clock2(Math.floor(left / 60) % 60) + ":" + clock2(left % 60);
     }
   }
   setInterval(function () { if (won && !won.saved && !win.hidden) showWin(); }, 1000);
@@ -500,7 +558,7 @@
         if (d && d.status === "ok" && typeof d.id === "string" && d.amount >= 30 && d.amount <= 100) {
           mine.amount = Math.round(d.amount);
           mine.hearts = Math.min(3, Math.max(1, Math.round(d.hearts) || 1));
-          won = { id: d.id, amount: mine.amount, hearts: mine.hearts, expires: Date.parse(d.expires_at) || Date.now() + 864e5, saved: false };
+          won = { id: d.id, amount: mine.amount, hearts: mine.hearts, expires: Date.parse(d.expires_at) || Date.now() + 36e5, saved: false };
           mine.burstAt = Math.max(mine.openedAt + CHARGE, now());
           writeWon(won);
         } else if (d && d.status === "rate_limited") {

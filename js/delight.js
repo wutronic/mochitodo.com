@@ -33,7 +33,6 @@
   var sky = all(".sky i").map(function (el) { return { el: el, depth: parseFloat(el.getAttribute("data-depth")) || 0.2 }; });
   var farHill = document.querySelector(".floor > .hill svg:first-child");
   var floorArt = document.querySelector(".floor-art");
-  var header = document.querySelector(".site-header");
   var vh = window.innerHeight, px = 0, py = 0;
 
   function measure() {
@@ -67,7 +66,6 @@
       // lift its bottom edge into view and leave a hard line above the hill.
       if (r.top < vh && r.bottom > 0) floorArt.style.backgroundPositionY = "calc(100% + " + Math.min(Math.max((vh - r.top) * 0.08, 0), 60).toFixed(1) + "px)";
     }
-    if (header) header.classList.toggle("scrolled", sy > 8);
   }
   var waiting = false;
   function ask() { if (!waiting) { waiting = true; requestAnimationFrame(update); } }
