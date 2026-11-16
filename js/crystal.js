@@ -45,6 +45,13 @@
       clearTimeout(gulpTimer); gulpTimer = setTimeout(function () { present.classList.remove("gulp"); }, 200);
     }
   }) : { fill: function () {}, clear: function () {} };
+  // The same win rains again around the pal in "Get Mochi" while it's still waiting to be claimed.
+  var getStage = document.getElementById("get-stage");
+  var getPile = getStage && window.MochiCoinPile ? window.MochiCoinPile(getStage) : null;
+  function dressGetPile() {
+    if (!getPile) return;
+    if (won && !won.saved && !ranOut(won)) getPile.fill(won.amount, false); else getPile.clear();
+  }
   var HINT = hint.textContent, KEY = "mochi-crystal";
 
   var CW = 82, CH = 82 * 420 / 320, COIN = 30, HEART = 34, COINS = 10;
@@ -274,7 +281,7 @@
     var has = !!won, landed = has && (!drop || drop.done);
     win.hidden = !has; total.hidden = !landed;
     stage.classList.toggle("won", landed);
-    if (!has) { wrap(false); return; }
+    if (!has) { wrap(false); dressGetPile(); return; }
     var gone = ranOut(won);
     // During the show the panel sits under the stage (so the countdown starts at once); when the
     // show is over it moves up into the stage, over the coins.
@@ -282,6 +289,7 @@
     else if (!landed && win.parentNode === stage) { winHome.insertBefore(win, winNext); win.classList.remove("in-stage"); }
     if (landed) {
       if (gone) pile.clear(); else pile.fill(won.amount, !won.saved);
+      dressGetPile();
       wrap(!gone && !won.saved, won.saved);
       stage.classList.toggle("gone", gone);
       bucksEl.textContent = gone ? 0 : won.amount; totalNum.textContent = won.amount; fillHearts(gone ? 0 : won.hearts);
