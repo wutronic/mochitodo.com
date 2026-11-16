@@ -48,8 +48,9 @@
   var HINT = hint.textContent, KEY = "mochi-crystal";
 
   var CW = 82, CH = 82 * 420 / 320, COIN = 30, HEART = 34, COINS = 10;
-  var FALL = reduce ? 0.35 : 0.95, CHARGE = reduce ? 0.3 : 0.62;
-  var COLLECT = 0.5, HEART_FLY = 1.05, HEART_DUR = 0.65;
+  // Snappier than the app's own timings (the website's visitors are deciding, not playing).
+  var FALL = reduce ? 0.3 : 0.7, CHARGE = reduce ? 0.25 : 0.4;
+  var COLLECT = 0.38, HEART_FLY = 0.7, HEART_DUR = 0.45;
   var PALETTE = [[158, 242, 255], [204, 179, 255], [255, 247, 255], [255, 199, 242]];
   var TAU = Math.PI * 2;
 
@@ -73,13 +74,13 @@
   function bez(a, c, b, t) { var u = 1 - t; return { x: u * u * a.x + 2 * u * t * c.x + t * t * b.x, y: u * u * a.y + 2 * u * t * c.y + t * t * b.y }; }
   function rgba(c, a) { return "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + Math.max(0, Math.min(1, a)).toFixed(3) + ")"; }
   function color(i) { return PALETTE[Math.floor(rnd(i, 9) * PALETTE.length) % PALETTE.length]; }
-  function collectStart(i) { return 1.4 + i * 0.075; }
+  function collectStart(i) { return 0.85 + i * 0.05; }
 
   function layout() {
     var r = stage.getBoundingClientRect();
     W = r.width; H = r.height; dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
-    rest = { x: W / 2, y: H - 44 };
+    rest = { x: W / 2, y: H / 2 + CH / 2 + 10 };          // the crystal hovers in the middle of the stage (10 = its hover lift)
     var p = pill.querySelector("img").getBoundingClientRect();
     bucksT = { x: p.left + p.width / 2 - r.left, y: p.top + p.height / 2 - r.top };
     heartT = heartEls.map(function (el) {
@@ -173,7 +174,7 @@
     var claim = !!wrapped;
     dockGift.setAttribute("href", claim ? "#get" : "#hearts-task");
     dockGift.setAttribute("aria-label", claim ? "Your present. Sign up below to claim it." : "Your prize. Go back and open it.");
-    dockSay.textContent = claim ? "Don't forget to claim me by signing up below!" : "You haven't opened me yet!";
+    dockSay.textContent = claim ? "Don't forget to claim me by signing up below!" : "Claim me!";
     if (remind) remind.hidden = !unopened();
     if (slot) slot.hidden = !unopened();
   }
@@ -210,18 +211,24 @@
     if (!wrapped) return;
     setTimeout(function () { var e = document.getElementById("access-email"); if (e && e.offsetParent) e.focus({ preventScroll: true }); }, 700);
   });
+  // Where things are, read straight from the page on every scroll (once a frame): a fast fling can
+  // jump right past an element, which an IntersectionObserver would never report.
+  var headerH = (document.querySelector(".site-header") || {}).offsetHeight || 64, placing = false;
+  function gone(el) { var r = el.getBoundingClientRect(); return r.height > 0 && r.bottom <= headerH + 1; }
+  function measure() {
+    placing = false;
+    presentPassed = gone(present);                        // the stage's present has slid up under the header
+    stagePassed = gone(stage);                            // so has the whole stage (crystal never opened)
+    if (slot) {                                           // its place in "Get Mochi" is well on screen
+      var r = slot.parentNode.getBoundingClientRect(), vh = window.innerHeight;
+      slotIn = r.bottom > vh * 0.2 && r.top < vh * 0.8;
+    }
+    dockCheck();
+  }
+  function remeasure() { if (!placing) { placing = true; requestAnimationFrame(measure); } }
+  window.addEventListener("scroll", remeasure, { passive: true });
+  window.addEventListener("resize", remeasure);
   if ("IntersectionObserver" in window) {
-    var headerH = (document.querySelector(".site-header") || {}).offsetHeight || 64;
-    function above(e) { return !e.isIntersecting && e.boundingClientRect.height > 0 && e.boundingClientRect.bottom <= headerH + 1; }
-    // The stage's present has slid up out of sight under the header.
-    new IntersectionObserver(function (entries) { presentPassed = above(entries[0]); dockCheck(); },
-      { rootMargin: "-" + headerH + "px 0px 0px 0px" }).observe(present);
-    // The whole stage has (for a crystal never opened).
-    new IntersectionObserver(function (entries) { stagePassed = above(entries[0]); dockCheck(); },
-      { rootMargin: "-" + headerH + "px 0px 0px 0px" }).observe(stage);
-    // Its place in "Get Mochi" is well on screen.
-    if (slot) new IntersectionObserver(function (entries) { slotIn = entries[0].isIntersecting; dockCheck(); },
-      { rootMargin: "-20% 0px -20% 0px" }).observe(slot.parentNode);
     var form = document.getElementById("access") || document.getElementById("get");
     if (form) new IntersectionObserver(function (entries) {
       var e = entries[0];
@@ -255,7 +262,7 @@
       winHead.textContent = won.why ? "Your crystal is spent." : "Your crystal ran out.";
       winText.textContent = won.why === "has_one" ? "Your email already has a crystal prize, so it keeps that one."
         : won.why === "used" ? "This prize was already saved to another email."
-        : "It paid " + won.amount + " Mochi Bucks and " + heartWord(won.hearts) + ", but the hour ran out. You can still sign up below.";
+        : "It paid " + won.amount + " Mochi Bucks and " + heartWord(won.hearts) + ", but the time ran out. You can still sign up below.";
     } else if (won.saved) {
       winText.hidden = false;
       winHead.textContent = won.amount + " Mochi Bucks and " + heartWord(won.hearts) + ". They're yours.";
@@ -265,12 +272,25 @@
       winText.hidden = true;
       winHead.textContent = "Claim " + won.amount + " Mochi Bucks for skins and " + won.hearts + " bonus " + (won.hearts === 1 ? "heart" : "hearts");
       claim.hidden = false;
-      // Minutes and seconds (59:59), so you can watch it tick; hours too only if more than one is left.
-      var left = Math.max(0, Math.floor((won.expires - Date.now()) / 1000));
-      leftEl.textContent = (left >= 3600 ? Math.floor(left / 3600) + ":" : "") + clock2(Math.floor(left / 60) % 60) + ":" + clock2(left % 60);
+      clockText(); startClock();
     }
   }
   setInterval(function () { if (won && !won.saved && !win.hidden) showWin(); }, 250);   // each second lands on time
+  // The countdown on the button runs to the millisecond (59:59.874), redrawn every frame while it's on
+  // screen, from the moment the win appears. Hours show only if more than one is left.
+  var clockOn = false, clockSeen = true;
+  function clockText() {
+    var ms = Math.max(0, won.expires - Date.now()), s = Math.floor(ms / 1000);
+    leftEl.textContent = (s >= 3600 ? Math.floor(s / 3600) + ":" : "") + clock2(Math.floor(s / 60) % 60) + ":" + clock2(s % 60) +
+                         "." + String(Math.floor(ms % 1000)).padStart(3, "0");
+  }
+  function startClock() { if (!clockOn) { clockOn = true; requestAnimationFrame(clockFrame); } }
+  function clockFrame() {
+    if (!won || won.saved || win.hidden || claim.hidden) { clockOn = false; return; }
+    if (clockSeen) clockText();
+    requestAnimationFrame(clockFrame);
+  }
+  if ("IntersectionObserver" in window) new IntersectionObserver(function (e) { clockSeen = e[0].isIntersecting; if (clockSeen) clockText(); }).observe(leftEl);
   window.addEventListener("mochi-crystal", function () {      // the sign-up form saved it (or another tab did)
     var fresh = readWon();
     if (fresh && won && fresh.id === won.id) { won = fresh; showWin(); }
@@ -376,7 +396,7 @@
   }
   function coinPose(i, c) {
     if (c.burst === null || reduce) return null;
-    var t = c.burst, launch = 0.02 * i + rnd(i, 3) * 0.05, flight = 0.55 + rnd(i, 4) * 0.12, local = t - launch;
+    var t = c.burst, launch = 0.02 * i + rnd(i, 3) * 0.05, flight = 0.42 + rnd(i, 4) * 0.1, local = t - launch;
     if (local < 0) return null;
     var start = burstCenter(), land = coinLanding(i), peak = 110 + rnd(i, 5) * 60;
     var spin = (rnd(i, 6) > 0.5 ? 1 : -1) * (240 + rnd(i, 7) * 200);
@@ -411,7 +431,7 @@
   }
 
   // ---------------------------------------------------------------- heart
-  var HEART_GAP = 0.2;                                           // each heart leaves a beat after the last
+  var HEART_GAP = 0.12;                                           // each heart leaves a beat after the last
   function heartPose(c, n) {
     if (c.burst === null || reduce) return null;
     var t = c.burst - n * HEART_GAP;
@@ -618,11 +638,11 @@
     rewards(c);
     var open = canOpen(c);
     if (hit.disabled === open) hit.disabled = !open;
-    stage.classList.toggle("ready", open && c.landed > 1.2);
+    stage.classList.toggle("ready", open && c.landed > 0.6);
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
-    if (drop.done && c.burst > 3.2) return;                 // the show is over; the panel takes it from here
+    if (drop.done && c.burst > 2.4) return;                 // the show is over; the panel takes it from here
     var pose = crystalPose(c);
     drawBehind(c, pose);
     drawCrystal(pose);
@@ -658,7 +678,7 @@
         if (d && d.status === "ok" && typeof d.id === "string" && d.amount >= 30 && d.amount <= 100) {
           mine.amount = Math.round(d.amount);
           mine.hearts = Math.min(3, Math.max(1, Math.round(d.hearts) || 1));
-          won = { id: d.id, amount: mine.amount, hearts: mine.hearts, expires: Date.parse(d.expires_at) || Date.now() + 36e5, saved: false };
+          won = { id: d.id, amount: mine.amount, hearts: mine.hearts, expires: Date.parse(d.expires_at) || Date.now() + 6e5, saved: false };
           mine.burstAt = Math.max(mine.openedAt + CHARGE, now());
           writeWon(won);
           showWin();                                          // the countdown starts now, not after the show
@@ -676,6 +696,7 @@
 
   won = readWon();
   showWin();
+  measure();                                              // the nudge in "Get Mochi" is right from the start
   new IntersectionObserver(function (entries) {
     visible = entries[0].isIntersecting;
     if (!visible) finishNow();                                // scrolled away mid-burst: skip to the end

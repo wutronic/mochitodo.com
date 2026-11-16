@@ -29,9 +29,9 @@
     var pointer = null, pointerTimer = 0;               // {x, y, vx, vy} while it moves over the stage
     var settling = 0;                                   // frames since the last coin dropped
     var gather = false, phase = "idle", landedAt = 0, gatherAt = 0;   // phase: idle, rain, gather, done
-    var HOLD = 1.1, FLY = 0.55, GAP = 0.016;            // seconds: heap on show, each flight, between coins
+    var HOLD = 0.5, FLY = 0.42, GAP = 0.009;            // seconds: heap on show, each flight, between coins
 
-    var G = 1250, STEPS = 3, SPAWN_PER_S = 55, DAMP = 0.988, FLOOR_FRICTION = 0.85;   // soft: they settle rather than bounce
+    var G = 1500, STEPS = 3, SPAWN_PER_S = 95, DAMP = 0.988, FLOOR_FRICTION = 0.85;   // soft: they settle rather than bounce
 
     function size() {
       var r = stage.getBoundingClientRect();
