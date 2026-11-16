@@ -324,11 +324,13 @@
                "." + String(Math.floor(ms % 1000)).padStart(3, "0");
     leftEl.textContent = text;
     if (bar && !bar.hidden) barLeft.textContent = text;
+    var formLeft = document.getElementById("access-go-left");
+    if (formLeft) formLeft.textContent = text;
   }
   function startClock() { if (!clockOn) { clockOn = true; requestAnimationFrame(clockFrame); } }
   function clockFrame() {
     if (!won || won.saved || win.hidden || claim.hidden) { clockOn = false; return; }
-    if (clockSeen || (bar && !bar.hidden)) clockText();
+    if (clockSeen || (bar && !bar.hidden) || document.getElementById("access-go-left")) clockText();   // any of the three on screen
     requestAnimationFrame(clockFrame);
   }
   if ("IntersectionObserver" in window) new IntersectionObserver(function (e) { clockSeen = e[0].isIntersecting; if (clockSeen) clockText(); }).observe(leftEl);
