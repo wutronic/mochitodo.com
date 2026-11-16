@@ -5,8 +5,11 @@
    bounce on the floor and fly into the balance, and a heart floats up into its slot.
    Every position is a function of the time since the fall, the tap or the burst.
 
+   One shot: a visitor taps the crystal once. This page remembers that and never offers it again.
+
    What the crystal pays is NOT decided here. On the tap this asks the server (the crystal-roll
-   function), which picks 30 to 100 Mochi Bucks, stores the amount, and sends back an id. The
+   function), which picks 30 to 100 Mochi Bucks and 1 to 3 hearts, stores them, and sends back an
+   id. The server also remembers the sender, so tapping again from a wiped browser gets the same win. The
    sign-up form sends that id with the email, and the server looks the amount up again. So
    changing any number on this page (or in the browser's storage) only changes what this page
    shows; it never changes what an account is paid. */
@@ -17,12 +20,12 @@
   var hit = document.getElementById("crystal-hit");
   var bucksEl = document.getElementById("crystal-bucks");
   var pill = document.getElementById("crystal-pill");
-  var heartEl = document.getElementById("crystal-heart");
+  var heartEls = Array.prototype.slice.call(document.querySelectorAll("#crystal-hearts .crystal-heart"));
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   var total = document.getElementById("crystal-total"), totalNum = document.getElementById("crystal-total-n");
   var hint = stage.querySelector(".crystal-hint");
-  var win = document.getElementById("crystal-win"), wonEl = document.getElementById("crystal-won");
+  var win = document.getElementById("crystal-win"), winHead = document.getElementById("crystal-win-head");
   var winText = document.getElementById("crystal-win-text"), winTimer = document.getElementById("crystal-win-timer");
   var leftEl = document.getElementById("crystal-left"), claim = document.getElementById("crystal-claim");
   var rollUrl = stage.getAttribute("data-roll");
@@ -40,7 +43,7 @@
   });
   var scratch = document.createElement("canvas"), sctx = scratch.getContext("2d");
 
-  var W = 0, H = 0, dpr = 1, rest = { x: 0, y: 0 }, bucksT = { x: 0, y: 0 }, heartT = { x: 0, y: 0 };
+  var W = 0, H = 0, dpr = 1, rest = { x: 0, y: 0 }, bucksT = { x: 0, y: 0 }, heartT = [];
   var drop = null, visible = false, frame = 0;
   // What this visitor won, as the server told it: {id, amount, expires (ms), saved}. Kept in the
   // browser only so the page can show it again; the server holds the real record.
@@ -61,23 +64,30 @@
     W = r.width; H = r.height; dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
     rest = { x: W / 2, y: H - 44 };
-    var p = pill.querySelector("img").getBoundingClientRect(), h = heartEl.getBoundingClientRect();
+    var p = pill.querySelector("img").getBoundingClientRect();
     bucksT = { x: p.left + p.width / 2 - r.left, y: p.top + p.height / 2 - r.top };
-    heartT = { x: h.left + h.width / 2 - r.left, y: h.top + h.height / 2 - r.top };
+    heartT = heartEls.map(function (el) {
+      var h = el.getBoundingClientRect();
+      return { x: h.left + h.width / 2 - r.left, y: h.top + h.height / 2 - r.top };
+    });
   }
 
   function newDrop(delay) {
-    drop = { seed: Math.random() * 1000, fallsAt: now() + delay, openedAt: null, burstAt: null, amount: 0,
-             arrived: 0, heart: false, done: false, cleared: false };
+    drop = { seed: Math.random() * 1000, fallsAt: now() + delay, openedAt: null, burstAt: null, amount: 0, hearts: 1,
+             arrived: 0, heartsIn: 0, done: false };
   }
 
   function readWon() {
     var v = null;
     try { v = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { v = window.__mochiCrystal || null; }
     if (!v || typeof v.id !== "string" || !(v.amount >= 30 && v.amount <= 100)) return null;
-    if (!v.saved && !(v.expires > Date.now())) return null;      // ran out before it was claimed
-    return { id: v.id, amount: Math.round(v.amount), expires: v.expires, saved: !!v.saved };
+    // Kept for good, even once it has run out: the crystal is one shot.
+    return { id: v.id, amount: Math.round(v.amount), hearts: Math.min(3, Math.max(1, Math.round(v.hearts) || 1)),
+             expires: v.expires, saved: !!v.saved, why: v.why === "has_one" || v.why === "used" ? v.why : "" };
   }
+  function ranOut(v) { return !v.saved && !(v.expires > Date.now()); }
+  function heartWord(n) { return n + (n === 1 ? " heart" : " hearts"); }
+  function fillHearts(n) { heartEls.forEach(function (el, i) { el.classList.toggle("on", i < n); }); }
   function writeWon(v) {
     window.__mochiCrystal = v;
     try { if (v) localStorage.setItem(KEY, JSON.stringify(v)); else localStorage.removeItem(KEY); } catch (e) { /* private window */ }
@@ -86,31 +96,31 @@
   function clock2(n) { return (n < 10 ? "0" : "") + n; }
   /* The panel under the stage: what you won, that it is yours, and how long you have. */
   function showWin() {
-    var has = !!won && (!drop || drop.done || drop.burstAt === null);
+    var has = !!won && (!drop || drop.done);               // not until the burst has played out
     win.hidden = !has; total.hidden = !has;
     stage.classList.toggle("won", has);
     if (!has) return;
-    bucksEl.textContent = won.amount; totalNum.textContent = won.amount; wonEl.textContent = won.amount;
-    heartEl.classList.add("on");
-    if (won.saved) {
+    var gone = ranOut(won);
+    stage.classList.toggle("gone", gone);
+    bucksEl.textContent = gone ? 0 : won.amount; totalNum.textContent = won.amount; fillHearts(gone ? 0 : won.hearts);
+    winTimer.hidden = true; claim.hidden = true;
+    if (gone) {
+      winHead.textContent = won.why ? "Your crystal is spent." : "Your crystal ran out.";
+      winText.textContent = won.why === "has_one" ? "The email you signed up with already had a crystal's win saved, so it keeps that one."
+        : won.why === "used" ? "This crystal's win was already saved to another email."
+        : "It paid " + won.amount + " Mochi Bucks and " + heartWord(won.hearts) + ", but they were not claimed within 24 hours. You can still sign up below.";
+    } else if (won.saved) {
+      winHead.textContent = won.amount + " Mochi Bucks and " + heartWord(won.hearts) + ". They're yours.";
       winText.textContent = "They are saved to the email you signed up with. Log in to the app with that email and they are added to your account.";
-      winTimer.hidden = true; claim.hidden = true;
     } else {
-      winText.textContent = "Sign up now and they are added to your account the first time you log in to the app with the same email.";
+      winHead.textContent = won.amount + " Mochi Bucks and " + heartWord(won.hearts) + ". They're yours.";
+      winText.textContent = "You get one crystal, and this is what it paid. Sign up now and they are added to your account the first time you log in to the app with the same email.";
       winTimer.hidden = false; claim.hidden = false;
       var left = Math.max(0, Math.floor((won.expires - Date.now()) / 1000));
       leftEl.textContent = clock2(Math.floor(left / 3600)) + ":" + clock2(Math.floor(left / 60) % 60) + ":" + clock2(left % 60);
     }
   }
-  setInterval(function () {
-    if (!won || won.saved) return;
-    if (won.expires <= Date.now()) {          // unclaimed and out of time: it is gone, and a new crystal can fall
-      won = null; writeWon(null); bucksEl.textContent = "0"; heartEl.classList.remove("on"); showWin();
-      if (visible) { newDrop(0.4); run(); } else drop = null;
-      return;
-    }
-    if (!win.hidden) showWin();
-  }, 1000);
+  setInterval(function () { if (won && !won.saved && !win.hidden) showWin(); }, 1000);
   window.addEventListener("mochi-crystal", function () {      // the sign-up form saved it (or another tab did)
     var fresh = readWon();
     if (fresh && won && fresh.id === won.id) { won = fresh; showWin(); }
@@ -251,9 +261,12 @@
   }
 
   // ---------------------------------------------------------------- heart
-  function heartPose(c) {
+  var HEART_GAP = 0.2;                                           // each heart leaves a beat after the last
+  function heartPose(c, n) {
     if (c.burst === null || reduce) return null;
-    var t = c.burst, start = burstCenter(), hover = { x: start.x - 18, y: start.y - 105 };
+    var t = c.burst - n * HEART_GAP;
+    if (t < 0 || !heartT[n]) return null;
+    var start = burstCenter(), hover = { x: start.x - 18 + (n - (drop.hearts - 1) / 2) * 34, y: start.y - 105 - (n % 2) * 10 };
     if (t < 0.55) {                                                // pops up out of the burst with a little overshoot
       var p = t / 0.55, e = easeOutBack(p);
       return { x: start.x + (hover.x - start.x) * e, y: start.y + (hover.y - start.y) * e,
@@ -263,7 +276,7 @@
     var k = (t - HEART_FLY) / HEART_DUR;
     if (k >= 1) return null;
     var e2 = k * k * (3 - 2 * k);
-    var pos = bez(hover, { x: hover.x - 40, y: (hover.y + heartT.y) / 2 }, heartT, e2);
+    var pos = bez(hover, { x: hover.x - 40, y: (hover.y + heartT[n].y) / 2 }, heartT[n], e2);
     return { x: pos.x, y: pos.y, s: 1 - 0.18 * e2, glow: 1 - 0.6 * e2 };
   }
   function drawHeart(p) {
@@ -396,7 +409,7 @@
       }
     }
     // The burst: a flash, a ring of light, shards and stars.
-    if (c.burst !== null && c.burst < 1.5) {
+    if (c.burst !== null && c.burst < 2.8) {
       t = c.burst;
       var ctr = burstCenter(), flashP = Math.min(t / 0.35, 1), fr = 30 + 140 * easeOut(flashP);
       var fg = ctx.createRadialGradient(ctr.x, ctr.y, 0, ctr.x, ctr.y, fr);
@@ -414,14 +427,15 @@
         if (i % 2 === 0) shard(px, py, 4 + rnd(i, 43) * 5, a + t * (rnd(i, 44) * 14 - 7), color(i), fade);
         else sparkle(px, py, 3 + rnd(i, 45) * 4, color(i), fade * (0.6 + 0.4 * Math.sin(t * 30 + i)), true);
       }
-      // A little burst of light where the heart lands in its slot.
-      var since = t - (HEART_FLY + HEART_DUR);
-      if (since >= 0 && since < 0.5) {
+      // A little burst of light where each heart lands in its slot.
+      for (var n = 0; n < drop.hearts && n < heartT.length; n++) {
+        var since = t - n * HEART_GAP - (HEART_FLY + HEART_DUR);
+        if (since < 0 || since >= 0.5) continue;
         var hp = since / 0.5;
         for (i = 0; i < 8; i++) {
           a = TAU * i / 8;
           var hd = 6 + 22 * easeOut(hp);
-          sparkle(heartT.x + Math.cos(a) * hd, heartT.y + Math.sin(a) * hd, 2.5, [255, 191, 230], 1 - hp, true);
+          sparkle(heartT[n].x + Math.cos(a) * hd, heartT[n].y + Math.sin(a) * hd, 2.5, [255, 191, 230], 1 - hp, true);
         }
       }
     }
@@ -434,8 +448,7 @@
     if (c.burst === null || drop.done) return;
     var t = c.burst;
     if (reduce) {
-      drop.arrived = COINS; bucksEl.textContent = drop.amount;
-      if (!drop.heart) { drop.heart = true; heartEl.classList.add("on"); }
+      drop.arrived = COINS; bucksEl.textContent = drop.amount; fillHearts(drop.hearts);
       if (t > 0.3) { drop.done = true; showWin(); }
       return;
     }
@@ -443,15 +456,15 @@
     while (drop.arrived < COINS && t >= collectStart(drop.arrived) + COLLECT) {
       drop.arrived++; bucksEl.textContent = Math.round(drop.amount * drop.arrived / COINS); bump(pill);
     }
-    if (!drop.heart && t >= HEART_FLY + HEART_DUR) { drop.heart = true; heartEl.classList.add("on"); }
-    if (t >= Math.max(collectStart(COINS - 1) + COLLECT, HEART_FLY + HEART_DUR + 0.5) + 0.2) { drop.done = true; showWin(); }
+    while (drop.heartsIn < drop.hearts && t >= drop.heartsIn * HEART_GAP + HEART_FLY + HEART_DUR) { drop.heartsIn++; fillHearts(drop.heartsIn); }
+    var last = (drop.hearts - 1) * HEART_GAP + HEART_FLY + HEART_DUR + 0.5;
+    if (t >= Math.max(collectStart(COINS - 1) + COLLECT, last) + 0.2) { drop.done = true; showWin(); }
   }
 
   function tick() {
     frame = 0;
     if (!visible || !drop) return;
     var t = now(), c = clockAt(t);
-    if (c.fall >= 0 && !drop.cleared) { drop.cleared = true; if (!won) heartEl.classList.remove("on"); }
     rewards(c);
     var open = canOpen(c);
     if (hit.disabled === open) hit.disabled = !open;
@@ -459,12 +472,12 @@
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
-    if (drop.done && c.burst > 1.6) return;                 // the show is over; the panel takes it from here
+    if (drop.done && c.burst > 3.2) return;                 // the show is over; the panel takes it from here
     var pose = crystalPose(c);
     drawBehind(c, pose);
     drawCrystal(pose);
     for (var i = 0; i < COINS; i++) { var cp = coinPose(i, c); if (cp) drawCoin(cp); }
-    var hp = heartPose(c); if (hp) drawHeart(hp);
+    for (var h = 0; h < drop.hearts; h++) { var hp = heartPose(c, h); if (hp) drawHeart(hp); }
     drawInFront(c, pose);
     frame = requestAnimationFrame(tick);
   }
@@ -486,11 +499,12 @@
         if (mine !== drop) return;
         if (d && d.status === "ok" && typeof d.id === "string" && d.amount >= 30 && d.amount <= 100) {
           mine.amount = Math.round(d.amount);
-          won = { id: d.id, amount: mine.amount, expires: Date.parse(d.expires_at) || Date.now() + 864e5, saved: false };
-          writeWon(won);
+          mine.hearts = Math.min(3, Math.max(1, Math.round(d.hearts) || 1));
+          won = { id: d.id, amount: mine.amount, hearts: mine.hearts, expires: Date.parse(d.expires_at) || Date.now() + 864e5, saved: false };
           mine.burstAt = Math.max(mine.openedAt + CHARGE, now());
+          writeWon(won);
         } else if (d && d.status === "rate_limited") {
-          failed("That's every crystal for today. Come back tomorrow.");
+          failed("Too many crystals from this network today. Try again tomorrow.");
         } else { failed("Couldn't reach us. Tap it again."); }
       })
       .catch(function () { if (mine === drop) failed("Couldn't reach us. Tap it again."); });

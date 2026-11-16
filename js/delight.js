@@ -63,7 +63,9 @@
     }
     if (floorArt) {
       var r = floorArt.getBoundingClientRect();
-      if (r.top < vh && r.bottom > 0) floorArt.style.backgroundPositionY = "calc(100% + " + ((r.top - vh) * 0.12).toFixed(1) + "px)";
+      // The picture only ever slides DOWN behind the footer's hill, never up: sliding up would
+      // lift its bottom edge into view and leave a hard line above the hill.
+      if (r.top < vh && r.bottom > 0) floorArt.style.backgroundPositionY = "calc(100% + " + Math.min(Math.max((vh - r.top) * 0.08, 0), 60).toFixed(1) + "px)";
     }
     if (header) header.classList.toggle("scrolled", sy > 8);
   }
