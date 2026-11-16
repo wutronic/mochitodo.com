@@ -1,16 +1,24 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Terms and EULA · Mochi</title><meta name="description" content="The rules for using Mochi: your account, subscriptions, shared content, and the license to use the app."><meta name="robots" content="noindex"><link rel="canonical" href="https://mochitodo.com/eula/"><meta property="og:title" content="Terms and EULA"><meta property="og:description" content="The rules for using Mochi: your account, subscriptions, shared content, and the license to use the app."><meta property="og:type" content="website"><meta property="og:image" content="https://mochitodo.com/images/icon.jpg"><meta name="theme-color" content="#fff6e0"><link rel="icon" type="image/png" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="stylesheet" href="/_astro/Base._GW2SU9n.css"></head><body><div class="draft-banner" role="note">Draft page. Not final yet.</div><header class="site-header" data-astro-cid-nen7h5rs><div class="wrap bar" data-astro-cid-nen7h5rs><a class="brand" href="/" aria-label="Mochi home" data-astro-cid-nen7h5rs><img src="/images/logotype.png" alt="Mochi" width="118" height="41" data-astro-cid-nen7h5rs></a><nav aria-label="Main" data-astro-cid-nen7h5rs><a class="far" href="/support/" data-astro-cid-nen7h5rs>Support</a></nav></div></header><script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Terms and EULA · Mochi</title><meta name="description" content="The rules for using Mochi: your account, subscriptions, shared content, and the license to use the app."><meta name="robots" content="noindex"><link rel="canonical" href="https://mochitodo.com/eula/"><meta property="og:title" content="Terms and EULA"><meta property="og:description" content="The rules for using Mochi: your account, subscriptions, shared content, and the license to use the app."><meta property="og:type" content="website"><meta property="og:image" content="https://mochitodo.com/images/icon.jpg"><meta name="theme-color" content="#fff6e0"><link rel="icon" type="image/png" href="/favicon.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="stylesheet" href="/_astro/Base.DUYU4nqW.css"></head><body><div class="draft-banner" role="note">Draft page. Not final yet.</div><header class="site-header" data-astro-cid-nen7h5rs><div class="wrap bar" data-astro-cid-nen7h5rs><a class="brand" href="/" aria-label="Mochi home" data-astro-cid-nen7h5rs><img src="/images/logotype.png" alt="Mochi" width="118" height="41" data-astro-cid-nen7h5rs></a><nav aria-label="Main" data-astro-cid-nen7h5rs><a class="far" href="/support/" data-astro-cid-nen7h5rs>Support</a><a class="btn gold small nav-cta" href="/#get" data-request-access tabindex="-1" aria-hidden="true" data-astro-cid-nen7h5rs>Sign up</a></nav></div></header><script>
   // The logo starts big at the top of the page and shrinks to its header size over the first
   // stretch of scrolling. Only the picture scales: the header's height never changes, so the
   // page under it never jumps. --logo-k is the scale, set straight from the scroll position.
   (function () {
     var header = document.querySelector(".site-header");
     if (!header) return;
-    var waiting = false;
+    var waiting = false, cta = header.querySelector(".nav-cta"), support = header.querySelector("nav a.far");
+    var hero = document.querySelector(".hero");
     function size() {
       waiting = false;
       var big = parseFloat(getComputedStyle(header).getPropertyValue("--logo-big")) || 1;
       var p = Math.min(Math.max(window.pageYOffset / 140, 0), 1);
       header.style.setProperty("--logo-k", (big - (big - 1) * p).toFixed(3));
+      // Past the hero (or the first stretch of a page without one): swap Support for the button.
+      if (!cta) return;
+      var past = hero ? hero.getBoundingClientRect().bottom < header.offsetHeight : window.pageYOffset > 320;
+      if (past === header.classList.contains("cta-on")) return;
+      header.classList.toggle("cta-on", past);
+      cta.setAttribute("aria-hidden", past ? "false" : "true"); cta.tabIndex = past ? 0 : -1;
+      if (support) { support.setAttribute("aria-hidden", past ? "true" : "false"); support.tabIndex = past ? -1 : 0; }
     }
     function ask() { if (!waiting) { waiting = true; requestAnimationFrame(size); } }
     window.addEventListener("scroll", ask, { passive: true });

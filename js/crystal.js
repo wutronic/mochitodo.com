@@ -27,9 +27,24 @@
   var hint = stage.querySelector(".crystal-hint");
   var win = document.getElementById("crystal-win"), winHead = document.getElementById("crystal-win-head");
   var winText = document.getElementById("crystal-win-text");
+  var winHome = win.parentNode, winNext = win.nextSibling;   // where the panel waits during the show
   var present = document.getElementById("crystal-present"), dock = document.getElementById("present-dock");
   var leftEl = document.getElementById("crystal-left"), claim = document.getElementById("crystal-claim");
   var rollUrl = stage.getAttribute("data-roll");
+  // The win as a heap of coins, one per Mochi Buck (public/js/coinpile.js).
+  // While unclaimed, the coins pour into the present, which gulps each one.
+  var gulpTimer = 0;
+  var pile = window.MochiCoinPile ? window.MochiCoinPile(stage, {
+    target: function () {
+      if (present.hidden) return null;
+      var s = stage.getBoundingClientRect(), r = present.querySelector("img").getBoundingClientRect();
+      return { x: r.left + r.width / 2 - s.left, y: r.top + r.height * 0.55 - s.top };
+    },
+    onArrive: function () {
+      present.classList.remove("gulp"); void present.offsetWidth; present.classList.add("gulp");
+      clearTimeout(gulpTimer); gulpTimer = setTimeout(function () { present.classList.remove("gulp"); }, 200);
+    }
+  }) : { fill: function () {}, clear: function () {} };
   var HINT = hint.textContent, KEY = "mochi-crystal";
 
   var CW = 82, CH = 82 * 420 / 320, COIN = 30, HEART = 34, COINS = 10;
@@ -110,7 +125,7 @@
       stage.classList.add("opening");
       if (!dock.hidden) dock.classList.add("opening");
       setTimeout(function () {
-        stage.classList.remove("opening", "wrapped", "fresh"); present.hidden = true;
+        stage.classList.remove("opening", "wrapped", "fresh"); present.hidden = true; present.style.visibility = "";
         dock.classList.remove("opening"); dockCheck();
       }, 600);
       return;
@@ -123,62 +138,139 @@
   /* Once the wrapped present scrolls off the top of the screen it waits in the bottom-right
      corner, shaking, and now and then says to claim it. The bubble keeps quiet once the sign-up
      form is on screen (or already passed): "below" would no longer be true. */
-  var passed = false, formReached = false, sayTimer = 0;
+  // One present, three places it can be. While the win is unclaimed it starts in the stage; as it
+  // slides up under the header it flies to the bottom-right corner and follows you. If you never
+  // opened the crystal, the present joins you in the corner once you've scrolled past it, and when
+  // "Get Mochi" comes into view it flies into place there, next to a nudge to go back and open it.
+  // Scroll back and it flies back the way it came. Only the corner one moves: the others are swapped
+  // in when it lands.
+  var stagePassed = false, presentPassed = false, slotIn = false, formReached = false, sayTimer = 0;
+  var at = "none", flight = null;
+  var dockGift = dock.querySelector(".present-dock-gift"), presentImg = present.querySelector("img");
+  var dockSay = dock.querySelector(".present-say");
+  var slot = document.getElementById("get-gift"), slotImg = slot && slot.querySelector("img");
+  var remind = document.getElementById("get-remind");
+  function onto(a, b) {                                   // the transform that lays box b over box a
+    return "translate(" + (a.left - b.left).toFixed(1) + "px," + (a.top - b.top).toFixed(1) + "px) scale(" + (a.width / b.width).toFixed(3) + ")";
+  }
+  function unopened() { return !won && !!rollUrl && !(drop && drop.openedAt !== null); }
+  function where() {
+    if (wrapped) return presentPassed ? "corner" : "stage";
+    if (unopened()) return slot && slotIn ? "slot" : stagePassed ? "corner" : "none";
+    return "none";
+  }
+  function rectAt(place) {
+    var el = place === "stage" ? presentImg : place === "slot" ? slotImg : null;
+    var r = el && el.getBoundingClientRect();
+    return r && r.width ? r : null;
+  }
+  function show(place) {                                  // exactly one place shows the present
+    present.style.visibility = place === "stage" || !wrapped ? "" : "hidden";
+    dock.hidden = place !== "corner";
+    if (slot) slot.classList.toggle("here", place === "slot");
+  }
+  function dressDock() {                                  // what the corner present says and where it goes
+    var claim = !!wrapped;
+    dockGift.setAttribute("href", claim ? "#get" : "#hearts-task");
+    dockGift.setAttribute("aria-label", claim ? "Your present. Sign up below to claim it." : "Your prize. Go back and open it.");
+    dockSay.textContent = claim ? "Don't forget to claim me by signing up below!" : "You haven't opened me yet!";
+    if (remind) remind.hidden = !unopened();
+    if (slot) slot.hidden = !unopened();
+  }
   function dockCheck() {
-    var on = wrapped && passed && !stage.classList.contains("opening");
-    if (dock.classList.contains("opening")) return;
-    if (on === !dock.hidden) return;
-    dock.hidden = !on;
+    if (dock.classList.contains("opening") || stage.classList.contains("opening")) return;
+    dressDock();
+    var to = where();
+    if (flight) { if (flight.to === to) return; flight.onfinish = null; flight.cancel(); at = flight.to; flight = null; show(at); }
+    if (to === at) { show(at); return; }
+    var from = at; at = to;
     clearTimeout(sayTimer); dock.classList.remove("say");
-    if (on) sayTimer = setTimeout(say, 1600);
+    var fromRect = rectAt(from), toRect = rectAt(to);
+    if (to === "corner") {                                // lift off from where it was, land in the corner
+      show("corner");
+      if (!reduce && fromRect) {
+        flight = dockGift.animate([{ transform: onto(fromRect, dockGift.getBoundingClientRect()) }, { transform: "none" }],
+                                  { duration: 720, easing: "cubic-bezier(0.22, 0.8, 0.25, 1)" });
+        flight.to = to; flight.onfinish = function () { flight = null; };
+      }
+      sayTimer = setTimeout(say, 1600);
+    } else if (from === "corner" && !reduce && toRect && !dock.hidden) {   // fly from the corner into place
+      flight = dockGift.animate([{ transform: "none" }, { transform: onto(toRect, dockGift.getBoundingClientRect()) }],
+                                { duration: to === "slot" ? 680 : 520, easing: "cubic-bezier(0.4, 0, 0.2, 1)" });
+      flight.to = to; flight.onfinish = function () { flight = null; show(to); };
+    } else show(to);
   }
   function say() {
     if (dock.hidden) return;
-    dock.classList.toggle("say", !formReached);
+    dock.classList.toggle("say", !(wrapped && formReached));
     sayTimer = setTimeout(function () { dock.classList.remove("say"); sayTimer = setTimeout(say, 8000); }, 4500);
   }
+  // Tapping the corner present: unclaimed → the sign-up box (cursor in the field); unopened → the crystal.
+  dockGift.addEventListener("click", function () {
+    if (!wrapped) return;
+    setTimeout(function () { var e = document.getElementById("access-email"); if (e && e.offsetParent) e.focus({ preventScroll: true }); }, 700);
+  });
   if ("IntersectionObserver" in window) {
-    new IntersectionObserver(function (entries) {
-      var e = entries[0];
-      passed = !e.isIntersecting && e.boundingClientRect.top < 0;
-      dockCheck();
-    }).observe(stage);
+    var headerH = (document.querySelector(".site-header") || {}).offsetHeight || 64;
+    function above(e) { return !e.isIntersecting && e.boundingClientRect.height > 0 && e.boundingClientRect.bottom <= headerH + 1; }
+    // The stage's present has slid up out of sight under the header.
+    new IntersectionObserver(function (entries) { presentPassed = above(entries[0]); dockCheck(); },
+      { rootMargin: "-" + headerH + "px 0px 0px 0px" }).observe(present);
+    // The whole stage has (for a crystal never opened).
+    new IntersectionObserver(function (entries) { stagePassed = above(entries[0]); dockCheck(); },
+      { rootMargin: "-" + headerH + "px 0px 0px 0px" }).observe(stage);
+    // Its place in "Get Mochi" is well on screen.
+    if (slot) new IntersectionObserver(function (entries) { slotIn = entries[0].isIntersecting; dockCheck(); },
+      { rootMargin: "-20% 0px -20% 0px" }).observe(slot.parentNode);
     var form = document.getElementById("access") || document.getElementById("get");
     if (form) new IntersectionObserver(function (entries) {
       var e = entries[0];
       formReached = e.isIntersecting || e.boundingClientRect.top < 0;
-      if (formReached) dock.classList.remove("say");
+      if (formReached && wrapped) dock.classList.remove("say");
     }).observe(form);
   }
 
   /* The panel under the stage: what you won, that it is yours, and how long you have. */
   function showWin() {
-    var has = !!won && (!drop || drop.done);               // not until the burst has played out
-    win.hidden = !has; total.hidden = !has;
-    stage.classList.toggle("won", has);
+    // The panel, and its countdown, show the moment the server answers. The stage (the total, then
+    // the present) waits until the burst has played out, so it doesn't spoil the show.
+    var has = !!won, landed = has && (!drop || drop.done);
+    win.hidden = !has; total.hidden = !landed;
+    stage.classList.toggle("won", landed);
     if (!has) { wrap(false); return; }
     var gone = ranOut(won);
-    wrap(!gone && !won.saved, won.saved);
-    stage.classList.toggle("gone", gone);
-    bucksEl.textContent = gone ? 0 : won.amount; totalNum.textContent = won.amount; fillHearts(gone ? 0 : won.hearts);
+    // During the show the panel sits under the stage (so the countdown starts at once); when the
+    // show is over it moves up into the stage, over the coins.
+    if (landed && win.parentNode !== stage) { stage.appendChild(win); win.classList.add("in-stage"); }
+    else if (!landed && win.parentNode === stage) { winHome.insertBefore(win, winNext); win.classList.remove("in-stage"); }
+    if (landed) {
+      if (gone) pile.clear(); else pile.fill(won.amount, !won.saved);
+      wrap(!gone && !won.saved, won.saved);
+      stage.classList.toggle("gone", gone);
+      bucksEl.textContent = gone ? 0 : won.amount; totalNum.textContent = won.amount; fillHearts(gone ? 0 : won.hearts);
+    }
     claim.hidden = true;
     if (gone) {
+      winText.hidden = false;
       winHead.textContent = won.why ? "Your crystal is spent." : "Your crystal ran out.";
       winText.textContent = won.why === "has_one" ? "Your email already has a crystal prize, so it keeps that one."
         : won.why === "used" ? "This prize was already saved to another email."
         : "It paid " + won.amount + " Mochi Bucks and " + heartWord(won.hearts) + ", but the hour ran out. You can still sign up below.";
     } else if (won.saved) {
+      winText.hidden = false;
       winHead.textContent = won.amount + " Mochi Bucks and " + heartWord(won.hearts) + ". They're yours.";
       winText.textContent = "They're saved to your email. Log in to the app with it to get them.";
     } else {
-      winHead.textContent = won.amount + " Mochi Bucks and " + heartWord(won.hearts) + ". They're yours.";
-      winText.textContent = "Sign up, then log in to the app with the same email to get them.";
+      // Unclaimed: one line says it all; the button carries the countdown.
+      winText.hidden = true;
+      winHead.textContent = "Claim " + won.amount + " Mochi Bucks for skins and " + won.hearts + " bonus " + (won.hearts === 1 ? "heart" : "hearts");
       claim.hidden = false;
+      // Minutes and seconds (59:59), so you can watch it tick; hours too only if more than one is left.
       var left = Math.max(0, Math.floor((won.expires - Date.now()) / 1000));
       leftEl.textContent = (left >= 3600 ? Math.floor(left / 3600) + ":" : "") + clock2(Math.floor(left / 60) % 60) + ":" + clock2(left % 60);
     }
   }
-  setInterval(function () { if (won && !won.saved && !win.hidden) showWin(); }, 1000);
+  setInterval(function () { if (won && !won.saved && !win.hidden) showWin(); }, 250);   // each second lands on time
   window.addEventListener("mochi-crystal", function () {      // the sign-up form saved it (or another tab did)
     var fresh = readWon();
     if (fresh && won && fresh.id === won.id) { won = fresh; showWin(); }
@@ -541,6 +633,13 @@
   }
   function run() { if (!frame && visible && drop) frame = requestAnimationFrame(tick); }
 
+  // Skip to the end of the burst (the animation only runs while the crystal is on screen).
+  function finishNow() {
+    if (!drop || drop.burstAt === null || drop.done) return;
+    drop.done = true; drop.arrived = COINS;
+    bucksEl.textContent = drop.amount; fillHearts(drop.hearts);
+    showWin();
+  }
   function failed(text) {
     drop.openedAt = null; drop.burstAt = null;              // back to hovering; it can be tapped again
     hint.textContent = text;
@@ -550,6 +649,7 @@
     var mine = drop;
     mine.openedAt = now();
     hint.textContent = HINT;
+    dockCheck();                                          // it's being opened: no more nudging
     if (navigator.vibrate && !reduce) { try { navigator.vibrate([8, 190, 10, 150, 14, 130, 18, 100, 40]); } catch (e) { /* not allowed here */ } }
     fetch(rollUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
       .then(function (r) { return r.json(); })
@@ -561,6 +661,8 @@
           won = { id: d.id, amount: mine.amount, hearts: mine.hearts, expires: Date.parse(d.expires_at) || Date.now() + 36e5, saved: false };
           mine.burstAt = Math.max(mine.openedAt + CHARGE, now());
           writeWon(won);
+          showWin();                                          // the countdown starts now, not after the show
+          if (!visible) finishNow();
         } else if (d && d.status === "rate_limited") {
           failed("Too many crystals from this network today. Try again tomorrow.");
         } else { failed("Couldn't reach us. Tap it again."); }
@@ -576,6 +678,7 @@
   showWin();
   new IntersectionObserver(function (entries) {
     visible = entries[0].isIntersecting;
+    if (!visible) finishNow();                                // scrolled away mid-burst: skip to the end
     if (visible) {
       layout();
       if (!drop && !won) newDrop(0.35);
