@@ -224,7 +224,37 @@
       slotIn = r.bottom > vh * 0.2 && r.top < vh * 0.8;
     }
     dockCheck();
+    barCheck();
   }
+  // The claim button sticks under the header once it has scrolled up out of sight, and steps away again
+  // when the sign-up form is on screen (or the win is claimed or runs out).
+  // When the form's own button ("Sign up and claim") comes into view, the Sign up buttons at the top
+  // fade away (the sticky one and the header's), and fade back if you scroll up again.
+  var formGo = document.getElementById("access-go"), siteHeader = document.querySelector(".site-header"), barFade = 0;
+  function barCheck() {
+    if (!bar) return;
+    var g = formGo && formGo.getBoundingClientRect(), goIn = !!g && g.height > 0 && g.top < window.innerHeight && g.bottom > 0;
+    if (siteHeader) siteHeader.classList.toggle("form-in", goIn);
+    var on = false;
+    if (won && !won.saved && !ranOut(won) && !win.hidden && !claim.hidden) {
+      var c = claim.getBoundingClientRect();
+      on = c.height > 0 && c.bottom <= headerH && !goIn;
+    }
+    var showing = !bar.hidden && !bar.classList.contains("leaving");
+    if (on === showing) return;
+    clearTimeout(barFade);
+    if (on) {
+      bar.classList.remove("leaving"); bar.hidden = false;
+      clockText(); startClock();
+    } else {
+      bar.classList.add("leaving");
+      barFade = setTimeout(function () { bar.hidden = true; bar.classList.remove("leaving"); }, reduce ? 0 : 320);
+    }
+    if (siteHeader) siteHeader.classList.toggle("bar-on", on);
+  }
+  document.getElementById("claim-bar-btn").addEventListener("click", function () {
+    setTimeout(function () { var e = document.getElementById("access-email"); if (e && e.offsetParent) e.focus({ preventScroll: true }); }, 700);
+  });
   function remeasure() { if (!placing) { placing = true; requestAnimationFrame(measure); } }
   window.addEventListener("scroll", remeasure, { passive: true });
   window.addEventListener("resize", remeasure);
@@ -275,19 +305,22 @@
       clockText(); startClock();
     }
   }
-  setInterval(function () { if (won && !won.saved && !win.hidden) showWin(); }, 250);   // each second lands on time
+  setInterval(function () { if (won && !won.saved && !win.hidden) showWin(); if (typeof barCheck === "function") barCheck(); }, 250);   // each second lands on time
   // The countdown on the button runs to the millisecond (59:59.874), redrawn every frame while it's on
   // screen, from the moment the win appears. Hours show only if more than one is left.
   var clockOn = false, clockSeen = true;
+  var bar = document.getElementById("claim-bar"), barLeft = document.getElementById("claim-bar-left");
   function clockText() {
     var ms = Math.max(0, won.expires - Date.now()), s = Math.floor(ms / 1000);
-    leftEl.textContent = (s >= 3600 ? Math.floor(s / 3600) + ":" : "") + clock2(Math.floor(s / 60) % 60) + ":" + clock2(s % 60) +
-                         "." + String(Math.floor(ms % 1000)).padStart(3, "0");
+    var text = (s >= 3600 ? Math.floor(s / 3600) + ":" : "") + clock2(Math.floor(s / 60) % 60) + ":" + clock2(s % 60) +
+               "." + String(Math.floor(ms % 1000)).padStart(3, "0");
+    leftEl.textContent = text;
+    if (bar && !bar.hidden) barLeft.textContent = text;
   }
   function startClock() { if (!clockOn) { clockOn = true; requestAnimationFrame(clockFrame); } }
   function clockFrame() {
     if (!won || won.saved || win.hidden || claim.hidden) { clockOn = false; return; }
-    if (clockSeen) clockText();
+    if (clockSeen || (bar && !bar.hidden)) clockText();
     requestAnimationFrame(clockFrame);
   }
   if ("IntersectionObserver" in window) new IntersectionObserver(function (e) { clockSeen = e[0].isIntersecting; if (clockSeen) clockText(); }).observe(leftEl);
