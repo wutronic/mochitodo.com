@@ -3,7 +3,13 @@
    a sparkle trail, lands with a squash and a ring of light, hovers with a shimmer and drifting
    sparkles. Tapped, it turns white, shakes harder and harder, and bursts: Mochi Bucks arc out,
    bounce on the floor and fly into the balance, and a heart floats up into its slot.
-   Every position is a function of the time since the fall, the tap or the burst. */
+   Every position is a function of the time since the fall, the tap or the burst.
+
+   What the crystal pays is NOT decided here. On the tap this asks the server (the crystal-roll
+   function), which picks 30 to 100 Mochi Bucks, stores the amount, and sends back an id. The
+   sign-up form sends that id with the email, and the server looks the amount up again. So
+   changing any number on this page (or in the browser's storage) only changes what this page
+   shows; it never changes what an account is paid. */
 (function () {
   var stage = document.getElementById("crystal-stage");
   if (!stage) return;
@@ -14,7 +20,15 @@
   var heartEl = document.getElementById("crystal-heart");
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  var CW = 82, CH = 82 * 420 / 320, COIN = 30, HEART = 34, COINS = 6;
+  var total = document.getElementById("crystal-total"), totalNum = document.getElementById("crystal-total-n");
+  var hint = stage.querySelector(".crystal-hint");
+  var win = document.getElementById("crystal-win"), wonEl = document.getElementById("crystal-won");
+  var winText = document.getElementById("crystal-win-text"), winTimer = document.getElementById("crystal-win-timer");
+  var leftEl = document.getElementById("crystal-left"), claim = document.getElementById("crystal-claim");
+  var rollUrl = stage.getAttribute("data-roll");
+  var HINT = hint.textContent, KEY = "mochi-crystal";
+
+  var CW = 82, CH = 82 * 420 / 320, COIN = 30, HEART = 34, COINS = 10;
   var FALL = reduce ? 0.35 : 0.95, CHARGE = reduce ? 0.3 : 0.62;
   var COLLECT = 0.5, HEART_FLY = 1.05, HEART_DUR = 0.65;
   var PALETTE = [[158, 242, 255], [204, 179, 255], [255, 247, 255], [255, 199, 242]];
@@ -27,7 +41,10 @@
   var scratch = document.createElement("canvas"), sctx = scratch.getContext("2d");
 
   var W = 0, H = 0, dpr = 1, rest = { x: 0, y: 0 }, bucksT = { x: 0, y: 0 }, heartT = { x: 0, y: 0 };
-  var drop = null, bucks = 0, visible = false, frame = 0;
+  var drop = null, visible = false, frame = 0;
+  // What this visitor won, as the server told it: {id, amount, expires (ms), saved}. Kept in the
+  // browser only so the page can show it again; the server holds the real record.
+  var won = null;
 
   function now() { return performance.now() / 1000; }
   function rnd(i, k) { var x = Math.sin(drop.seed + i * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); }
@@ -50,14 +67,61 @@
   }
 
   function newDrop(delay) {
-    drop = { seed: Math.random() * 1000, fallsAt: now() + delay, openedAt: null, arrived: 0, heart: false, done: false, cleared: false };
+    drop = { seed: Math.random() * 1000, fallsAt: now() + delay, openedAt: null, burstAt: null, amount: 0,
+             arrived: 0, heart: false, done: false, cleared: false };
   }
+
+  function readWon() {
+    var v = null;
+    try { v = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { v = window.__mochiCrystal || null; }
+    if (!v || typeof v.id !== "string" || !(v.amount >= 30 && v.amount <= 100)) return null;
+    if (!v.saved && !(v.expires > Date.now())) return null;      // ran out before it was claimed
+    return { id: v.id, amount: Math.round(v.amount), expires: v.expires, saved: !!v.saved };
+  }
+  function writeWon(v) {
+    window.__mochiCrystal = v;
+    try { if (v) localStorage.setItem(KEY, JSON.stringify(v)); else localStorage.removeItem(KEY); } catch (e) { /* private window */ }
+    window.dispatchEvent(new CustomEvent("mochi-crystal"));
+  }
+  function clock2(n) { return (n < 10 ? "0" : "") + n; }
+  /* The panel under the stage: what you won, that it is yours, and how long you have. */
+  function showWin() {
+    var has = !!won && (!drop || drop.done || drop.burstAt === null);
+    win.hidden = !has; total.hidden = !has;
+    stage.classList.toggle("won", has);
+    if (!has) return;
+    bucksEl.textContent = won.amount; totalNum.textContent = won.amount; wonEl.textContent = won.amount;
+    heartEl.classList.add("on");
+    if (won.saved) {
+      winText.textContent = "They are saved to the email you signed up with. Log in to the app with that email and they are added to your account.";
+      winTimer.hidden = true; claim.hidden = true;
+    } else {
+      winText.textContent = "Sign up now and they are added to your account the first time you log in to the app with the same email.";
+      winTimer.hidden = false; claim.hidden = false;
+      var left = Math.max(0, Math.floor((won.expires - Date.now()) / 1000));
+      leftEl.textContent = clock2(Math.floor(left / 3600)) + ":" + clock2(Math.floor(left / 60) % 60) + ":" + clock2(left % 60);
+    }
+  }
+  setInterval(function () {
+    if (!won || won.saved) return;
+    if (won.expires <= Date.now()) {          // unclaimed and out of time: it is gone, and a new crystal can fall
+      won = null; writeWon(null); bucksEl.textContent = "0"; heartEl.classList.remove("on"); showWin();
+      if (visible) { newDrop(0.4); run(); } else drop = null;
+      return;
+    }
+    if (!win.hidden) showWin();
+  }, 1000);
+  window.addEventListener("mochi-crystal", function () {      // the sign-up form saved it (or another tab did)
+    var fresh = readWon();
+    if (fresh && won && fresh.id === won.id) { won = fresh; showWin(); }
+  });
 
   function clockAt(t) {
     var fall = t - drop.fallsAt, c = { fall: fall, landed: fall - FALL, opened: null, burst: null };
     if (drop.openedAt !== null) {
       c.opened = t - drop.openedAt;
-      if (c.opened >= CHARGE) c.burst = c.opened - CHARGE;
+      // It keeps charging (and shaking) until the server has answered with the amount.
+      if (drop.burstAt !== null && t >= drop.burstAt) c.burst = t - drop.burstAt;
     }
     return c;
   }
@@ -367,28 +431,27 @@
   // ---------------------------------------------------------------- rewards and the loop
   function bump(el) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
   function rewards(c) {
-    if (c.burst === null) return;
+    if (c.burst === null || drop.done) return;
     var t = c.burst;
     if (reduce) {
-      if (drop.arrived < COINS) { drop.arrived = COINS; bucks += COINS; bucksEl.textContent = bucks; }
+      drop.arrived = COINS; bucksEl.textContent = drop.amount;
       if (!drop.heart) { drop.heart = true; heartEl.classList.add("on"); }
-      if (t > 0.3) drop.done = true;
+      if (t > 0.3) { drop.done = true; showWin(); }
       return;
     }
+    // The balance counts up to the amount as the coins fly in.
     while (drop.arrived < COINS && t >= collectStart(drop.arrived) + COLLECT) {
-      drop.arrived++; bucks++; bucksEl.textContent = bucks; bump(pill);
+      drop.arrived++; bucksEl.textContent = Math.round(drop.amount * drop.arrived / COINS); bump(pill);
     }
     if (!drop.heart && t >= HEART_FLY + HEART_DUR) { drop.heart = true; heartEl.classList.add("on"); }
-    if (t >= Math.max(collectStart(COINS - 1) + COLLECT, HEART_FLY + HEART_DUR + 0.5) + 0.2) drop.done = true;
+    if (t >= Math.max(collectStart(COINS - 1) + COLLECT, HEART_FLY + HEART_DUR + 0.5) + 0.2) { drop.done = true; showWin(); }
   }
 
   function tick() {
     frame = 0;
-    if (!visible) return;
-    var t = now();
-    if (drop.done && t - drop.openedAt > CHARGE + 4.4) newDrop(0.2);        // a moment to enjoy it, then another one falls
-    var c = clockAt(t);
-    if (c.fall >= 0 && !drop.cleared) { drop.cleared = true; heartEl.classList.remove("on"); }
+    if (!visible || !drop) return;
+    var t = now(), c = clockAt(t);
+    if (c.fall >= 0 && !drop.cleared) { drop.cleared = true; if (!won) heartEl.classList.remove("on"); }
     rewards(c);
     var open = canOpen(c);
     if (hit.disabled === open) hit.disabled = !open;
@@ -396,6 +459,7 @@
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
+    if (drop.done && c.burst > 1.6) return;                 // the show is over; the panel takes it from here
     var pose = crystalPose(c);
     drawBehind(c, pose);
     drawCrystal(pose);
@@ -404,20 +468,45 @@
     drawInFront(c, pose);
     frame = requestAnimationFrame(tick);
   }
-  function run() { if (!frame && visible) frame = requestAnimationFrame(tick); }
+  function run() { if (!frame && visible && drop) frame = requestAnimationFrame(tick); }
 
+  function failed(text) {
+    drop.openedAt = null; drop.burstAt = null;              // back to hovering; it can be tapped again
+    hint.textContent = text;
+  }
   hit.addEventListener("click", function () {
-    if (!drop || !canOpen(clockAt(now()))) return;
-    drop.openedAt = now();
+    if (!drop || !rollUrl || !canOpen(clockAt(now()))) return;
+    var mine = drop;
+    mine.openedAt = now();
+    hint.textContent = HINT;
     if (navigator.vibrate && !reduce) { try { navigator.vibrate([8, 190, 10, 150, 14, 130, 18, 100, 40]); } catch (e) { /* not allowed here */ } }
+    fetch(rollUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (mine !== drop) return;
+        if (d && d.status === "ok" && typeof d.id === "string" && d.amount >= 30 && d.amount <= 100) {
+          mine.amount = Math.round(d.amount);
+          won = { id: d.id, amount: mine.amount, expires: Date.parse(d.expires_at) || Date.now() + 864e5, saved: false };
+          writeWon(won);
+          mine.burstAt = Math.max(mine.openedAt + CHARGE, now());
+        } else if (d && d.status === "rate_limited") {
+          failed("That's every crystal for today. Come back tomorrow.");
+        } else { failed("Couldn't reach us. Tap it again."); }
+      })
+      .catch(function () { if (mine === drop) failed("Couldn't reach us. Tap it again."); });
+  });
+  claim.addEventListener("click", function () {
+    setTimeout(function () { var e = document.getElementById("access-email"); if (e && e.offsetParent) e.focus({ preventScroll: true }); }, 700);
   });
   window.addEventListener("resize", function () { layout(); });
 
+  won = readWon();
+  showWin();
   new IntersectionObserver(function (entries) {
     visible = entries[0].isIntersecting;
     if (visible) {
       layout();
-      if (!drop) newDrop(0.35);
+      if (!drop && !won) newDrop(0.35);
       run();
     }
   }, { threshold: 0.35 }).observe(stage);
