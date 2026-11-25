@@ -27,7 +27,7 @@
   layer(".drop", 18, 0);
   layer(".pair-pal:first-child", 16, 0);
   layer(".pair-pal:last-child", -10, 0);
-  layer(".mood-stage", 14, 0);
+  // (The pal's stage stays put: its head lines up with the "Meet your pal" title.)
 
   // Things pinned to the top of the page move with how far you have scrolled, not where they are.
   var sky = all(".sky i").map(function (el) { return { el: el, depth: parseFloat(el.getAttribute("data-depth")) || 0.2 }; });
